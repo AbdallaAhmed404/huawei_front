@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* تعريف المتغيرات الأساسية للمشروع بالكامل */
+:root {
+  --background: #fbfbfb;
+  --foreground: #000000;
+  --card: #ffffff;
+  --card-foreground: #000000;
+  --popover: #ffffff;
+  --popover-foreground: #000000;
+  --primary: #000000;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #000000;
+  --muted: #f5f5f5;
+  --muted-foreground: #666666;
+  --accent: #f5f5f5;
+  --accent-foreground: #000000;
+  --destructive: #cf1322;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #000000;
+  --radius: 1.5rem;
+}
+
+@font-face {
+  font-family: 'Huawei Sans Custom';
+  src: url('/fonts/HuaweiSans.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Huawei Sans Custom';
+  src: url('/fonts/HuaweiSansMedium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Huawei Sans Custom';
+  src: url('/fonts/HuaweiSans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* تنسيق المتصفح والبودي الأساسي لضمان ظهور النصوص */
+@layer base {
+  html, body {
+    background-color: var(--background) !important;
+    color: var(--foreground) !important;
+    margin: 0;
+    padding: 0;
+   font-family: 'Huawei Sans Custom', system-ui, -apple-system, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    border-color: var(--border);
+  }
+}
+
+/* تعطيل الـ Dark Mode تماماً عشان التيكست ما يختفيش */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #fbfbfb;
+    --foreground: #000000;
+  }
+}
+
+/* تخصيص السكرول بار لهوية هواوي */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #e5e5e5;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #cccccc;
+}
+
+/* كلاسات مساعدة سريعة */
+.huawei-card {
+  background-color: white;
+  border-radius: 24px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.huawei-card:hover {
+  border-color: #f0f0f0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
