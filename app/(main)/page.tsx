@@ -18,7 +18,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPopup = async () => {
       try {
-        const res = await axios.get("https://huawei-production.up.railway.app/admin/popup");
+        const res = await axios.get("https://api.huaweioman.com/admin/popup");
         if (res.data.popup && res.data.popup.imageUrl) {
           setPopup(res.data.popup);
           // يظهر مرة واحدة فقط في كل جلسة متصفح

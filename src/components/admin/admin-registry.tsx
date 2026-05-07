@@ -61,7 +61,7 @@ export default function ProductRegistry() {
   
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/allpr");
+      const res = await axios.get("https://api.huaweioman.com/admin/allpr");
       setProducts(res.data);
     } catch (err) { console.error("Fetch error", err); }
   };
@@ -70,7 +70,7 @@ export default function ProductRegistry() {
 
   const uploadToR2 = async (file: File) => {
     try {
-      const { data } = await axios.post("https://huawei-production.up.railway.app/admin/get-upload-url", {
+      const { data } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
         folder: "products", filename: file.name, contentType: file.type,
       });
       await axios.put(data.signedUrl, file, { headers: { "Content-Type": file.type } });
@@ -85,7 +85,7 @@ export default function ProductRegistry() {
       message: "Are you sure you want to delete this asset? This action cannot be undone.",
       onConfirm: async () => {
         try {
-          await axios.delete(`https://huawei-production.up.railway.app/admin/delete/${id}`);
+          await axios.delete(`https://api.huaweioman.com/admin/delete/${id}`);
           fetchProducts();
         } catch (err) {
           setPopup({ show: true, type: 'info', message: "Delete failed. Please try again." });
@@ -99,7 +99,7 @@ export default function ProductRegistry() {
     setLoading(true);
     const endpoint = isEditing ? "updateproduct" : "addproduct";
     try {
-      await axios.post(`https://huawei-production.up.railway.app/admin/${endpoint}`, formData);
+      await axios.post(`https://api.huaweioman.com/admin/${endpoint}`, formData);
       setIsFormOpen(false);
       setFormData(initialForm);
       fetchProducts();

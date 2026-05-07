@@ -54,7 +54,7 @@ export default function LoginPage() {
         setError("");
 
         try {
-            const res = await axios.post('https://huawei-production.up.railway.app/user/login', formData);
+            const res = await axios.post('https://api.huaweioman.com/user/login', formData);
             login(res.data.token, res.data.user);
             router.push('/');
         } catch (err: any) {

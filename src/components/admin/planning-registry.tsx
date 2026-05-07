@@ -57,28 +57,28 @@ export default function StoreCustomizer() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/allpr");
+      const res = await axios.get("https://api.huaweioman.com/admin/allpr");
       setProducts(res.data || []);
     } catch (err) { console.error(err); }
   };
 
   const fetchSliders = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/sliders");
+      const res = await axios.get("https://api.huaweioman.com/admin/sliders");
       setSliders(res.data.sliders || []);
     } catch (err) { console.error("Error fetching sliders:", err); }
   };
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/categories");
+      const res = await axios.get("https://api.huaweioman.com/admin/categories");
       setDbCategories(res.data.categories || []);
     } catch (err) { console.error("Error fetching categories:", err); }
   };
 
   const fetchPopup = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/popup");
+      const res = await axios.get("https://api.huaweioman.com/admin/popup");
       setPopupData(res.data.popup);
     } catch (err) { console.error("Error fetching popup:", err); }
   };
@@ -87,7 +87,7 @@ export default function StoreCustomizer() {
       if(!id) return;
       setIsSyncing(true);
       try {
-          const res = await axios.get(`https://huawei-production.up.railway.app/admin/gallery/${id}`);
+          const res = await axios.get(`https://api.huaweioman.com/admin/gallery/${id}`);
           setGalleryItems(res.data.galleryItems || []);
       } catch (err) { 
           setGalleryItems([]); 
@@ -105,7 +105,7 @@ export default function StoreCustomizer() {
           const uploadedUrls = [];
           for (let i = 0; i < files.length; i++) {
               const file = files[i];
-              const { data: uploadData } = await axios.post("https://huawei-production.up.railway.app/admin/get-upload-url", {
+              const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
                   folder: "product-gallery", filename: file.name, contentType: file.type
               });
               await axios.put(uploadData.signedUrl, file, { headers: { "Content-Type": file.type } });
@@ -122,7 +122,7 @@ export default function StoreCustomizer() {
       if (!selectedProductId) return alert("Select a product first");
       setIsSyncing(true);
       try {
-          await axios.post("https://huawei-production.up.railway.app/admin/gallery/sync", {
+          await axios.post("https://api.huaweioman.com/admin/gallery/sync", {
               productId: selectedProductId,
               galleryItems
           });
@@ -136,11 +136,11 @@ export default function StoreCustomizer() {
     if (!newSlider.file) return ;
     try {
       setIsLoading(true);
-      const { data: uploadData } = await axios.post("https://huawei-production.up.railway.app/admin/get-upload-url", {
+      const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
         folder: "sliders", filename: newSlider.file.name, contentType: newSlider.file.type
       });
       await axios.put(uploadData.signedUrl, newSlider.file, { headers: { "Content-Type": newSlider.file.type } });
-      const { data: finalData } = await axios.post("https://huawei-production.up.railway.app/admin/sliders", {
+      const { data: finalData } = await axios.post("https://api.huaweioman.com/admin/sliders", {
         imageUrl: uploadData.publicUrl, title: "", link: newSlider.link || "#"
       });
       setSliders(finalData.sliders);
@@ -152,7 +152,7 @@ export default function StoreCustomizer() {
   const handleDeleteSlider = async (id: string) => {
     if (!confirm("Are you sure?")) return;
     try {
-      const res = await axios.delete(`https://huawei-production.up.railway.app/admin/sliders/${id}`);
+      const res = await axios.delete(`https://api.huaweioman.com/admin/sliders/${id}`);
       setSliders(res.data.sliders);
     } catch (err) { alert("Delete failed"); }
   };
@@ -161,15 +161,15 @@ export default function StoreCustomizer() {
     if (!catFile || !selectedMainName) return alert("Please select a category and an image");
     try {
       setCatLoading(true);
-      const { data: uploadData } = await axios.post("https://huawei-production.up.railway.app/admin/get-upload-url", {
+      const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
         folder: "categories", filename: catFile.name, contentType: catFile.type
       });
       await axios.put(uploadData.signedUrl, catFile, { headers: { "Content-Type": catFile.type } });
       const imageUrl = uploadData.publicUrl;
       if (selectedSubName === "") {
-        await axios.patch(`https://huawei-production.up.railway.app/admin/categories/main/upsert`, { mainIcon: imageUrl, mainCategoryName: selectedMainName });
+        await axios.patch(`https://api.huaweioman.com/admin/categories/main/upsert`, { mainIcon: imageUrl, mainCategoryName: selectedMainName });
       } else {
-        await axios.patch(`https://huawei-production.up.railway.app/admin/categories/sub/upsert`, { mainCategoryName: selectedMainName, subCategoryName: selectedSubName, icon: imageUrl });
+        await axios.patch(`https://api.huaweioman.com/admin/categories/sub/upsert`, { mainCategoryName: selectedMainName, subCategoryName: selectedSubName, icon: imageUrl });
       }
       await fetchCategories();
       setIsCatModalOpen(false);
@@ -180,11 +180,11 @@ export default function StoreCustomizer() {
     if (!newPopup.file) return ;
     try {
       setPopupLoading(true);
-      const { data: uploadData } = await axios.post("https://huawei-production.up.railway.app/admin/get-upload-url", {
+      const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
         folder: "popups", filename: newPopup.file.name, contentType: newPopup.file.type
       });
       await axios.put(uploadData.signedUrl, newPopup.file, { headers: { "Content-Type": newPopup.file.type } });
-      const res = await axios.patch("https://huawei-production.up.railway.app/admin/popup", {
+      const res = await axios.patch("https://api.huaweioman.com/admin/popup", {
         imageUrl: uploadData.publicUrl, link: newPopup.link || "#"
       });
       setPopupData(res.data.popup);

@@ -33,7 +33,7 @@ export default function CouponRegistry() {
   const fetchCoupons = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/getAllCoupons", {
+      const res = await axios.get("https://api.huaweioman.com/admin/getAllCoupons", {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       setCoupons(res.data.coupons || []);
@@ -42,7 +42,7 @@ export default function CouponRegistry() {
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get("https://huawei-production.up.railway.app/admin/allpr"); // تأكد من مسار جلب المنتجات عندك
+      const res = await axios.get("https://api.huaweioman.com/admin/allpr"); // تأكد من مسار جلب المنتجات عندك
       setProducts(res.data || []);
     } catch (err) { console.error("Error fetching products:", err); }
   };
@@ -58,7 +58,7 @@ export default function CouponRegistry() {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      await axios.post("https://huawei-production.up.railway.app/admin/createCoupon", formData, {
+      await axios.post("https://api.huaweioman.com/admin/createCoupon", formData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       fetchCoupons();
@@ -75,7 +75,7 @@ export default function CouponRegistry() {
     if (!confirm("Are you sure?")) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://huawei-production.up.railway.app/admin/deleteCoupon/${id}`, {
+      await axios.delete(`https://api.huaweioman.com/admin/deleteCoupon/${id}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       fetchCoupons();

@@ -117,7 +117,7 @@ export default function ProductPurchasePage() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`https://huawei-production.up.railway.app/user/product/${id}`);
+                const res = await axios.get(`https://api.huaweioman.com/user/product/${id}`);
                 const data: Product = res.data;
                 setProduct(data);
                 if (data.colors?.length > 0) {
@@ -126,7 +126,7 @@ export default function ProductPurchasePage() {
 
                 // جلب بيانات الجاليري (Key Features)
                 try {
-                    const galleryRes = await axios.get(`https://huawei-production.up.railway.app/admin/gallery/${id}`);
+                    const galleryRes = await axios.get(`https://api.huaweioman.com/admin/gallery/${id}`);
                     if (galleryRes.data) {
                         const items = galleryRes.data.galleryItems || [];
                         setGallery(items);

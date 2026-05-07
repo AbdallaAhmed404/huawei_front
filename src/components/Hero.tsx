@@ -25,7 +25,7 @@ export default function HeroSlider() {
   useEffect(() => {
     const fetchSliders = async () => {
       try {
-        const res = await axios.get("https://huawei-production.up.railway.app/admin/sliders");
+        const res = await axios.get("https://api.huaweioman.com/admin/sliders");
         // السيرفر يرجع { sliders: [...] } حسب الكود الخاص بك
         setSliders(res.data.sliders || []);
       } catch (err) {

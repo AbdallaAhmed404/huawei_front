@@ -45,7 +45,7 @@ export default function OrderRegistry() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch("https://huawei-production.up.railway.app/admin/orders");
+      const response = await fetch("https://api.huaweioman.com/admin/orders");
       const data = await response.json();
       setOrders(data);
     } catch (error) {
@@ -57,7 +57,7 @@ export default function OrderRegistry() {
 
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
     try {
-      const response = await fetch(`https://huawei-production.up.railway.app/admin/Orders/${orderId}/status`, {
+      const response = await fetch(`https://api.huaweioman.com/admin/Orders/${orderId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -74,7 +74,7 @@ export default function OrderRegistry() {
 
   const handleDeleteOrder = async (orderId: string) => {
     try {
-      const response = await fetch(`https://huawei-production.up.railway.app/admin/Orders/${orderId}`, { method: "DELETE" });
+      const response = await fetch(`https://api.huaweioman.com/admin/Orders/${orderId}`, { method: "DELETE" });
       if (response.ok) {
         setOrders((prev) => prev.filter((o) => o._id !== orderId));
       }

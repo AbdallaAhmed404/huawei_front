@@ -94,7 +94,7 @@ export default function CheckoutPage() {
             if (isAuthenticated) {
                 try {
                     const token = localStorage.getItem('token'); // أو حسب طريقة تخزين التوكن عندك
-                    const response = await fetch('https://huawei-production.up.railway.app/user/profile', {
+                    const response = await fetch('https://api.huaweioman.com/user/profile', {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
                 total: finalTotal
             };
 
-            const response = await fetch('https://huawei-production.up.railway.app/user/Order', {
+            const response = await fetch('https://api.huaweioman.com/user/Order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)

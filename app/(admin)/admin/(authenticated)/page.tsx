@@ -33,9 +33,9 @@ export default function AdminDashboard() {
     const fetchData = async () => {
       try {
         const [prodRes, orderRes , visitorRes] = await Promise.all([
-          fetch("https://huawei-production.up.railway.app/admin/allpr"),
-          fetch("https://huawei-production.up.railway.app/admin/orders"),
-          fetch("https://huawei-production.up.railway.app/admin/data")
+          fetch("https://api.huaweioman.com/admin/allpr"),
+          fetch("https://api.huaweioman.com/admin/orders"),
+          fetch("https://api.huaweioman.com/admin/data")
         ]);
         const prodData = await prodRes.json();
         const orderData = await orderRes.json();

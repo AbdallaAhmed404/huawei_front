@@ -79,7 +79,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMounted(true);
-    fetch("https://huawei-production.up.railway.app/admin/allproduct")
+    fetch("https://api.huaweioman.com/admin/allproduct")
       .then((res) => res.json())
       .then((data) => setProducts(data))
       .catch((err) => console.error("Error fetching products:", err));

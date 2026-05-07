@@ -19,7 +19,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       {/* سكربت عداد الزوار */}
       <Script id="visitor-counter" strategy="afterInteractive">
         {`
-          fetch('https://huawei-production.up.railway.app/admin/hit', { 
+          fetch('https://api.huaweioman.com/admin/hit', { 
             method: 'POST',
             mode: 'no-cors' 
           }).catch(err => console.log('Analytics sync failed'));

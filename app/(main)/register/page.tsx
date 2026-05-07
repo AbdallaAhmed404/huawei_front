@@ -77,7 +77,7 @@ export default function RegisterPage() {
         setError("");
 
         try {
-            const res = await axios.post('https://huawei-production.up.railway.app/user/register', formData);
+            const res = await axios.post('https://api.huaweioman.com/user/register', formData);
             login(res.data.token, res.data.user);
             router.push('/'); // التوجه للرئيسية بعد النجاح
         } catch (err: any) {

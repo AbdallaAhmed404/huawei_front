@@ -31,7 +31,7 @@ export default function RegisterForm() {
     setStatus({ type: "", message: "" });
 
     try {
-      await axios.post("https://huawei-production.up.railway.app/admin/register", {
+      await axios.post("https://api.huaweioman.com/admin/register", {
         email: formData.email,
         password: formData.password,
       });

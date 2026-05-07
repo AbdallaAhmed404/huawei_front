@@ -106,8 +106,8 @@ export default function SmartphonePage() {
     const fetchData = async () => {
       try {
         const [catRes, prodRes] = await Promise.all([
-          axios.get("https://huawei-production.up.railway.app/admin/categories"),
-          axios.get("https://huawei-production.up.railway.app/admin/allproduct")
+          axios.get("https://api.huaweioman.com/admin/categories"),
+          axios.get("https://api.huaweioman.com/admin/allproduct")
         ]);
         const smartphoneMain = catRes.data.categories.find((c: any) => c.mainCategoryName === "Smartphone");
         setSubCategories(smartphoneMain?.subCategories || []);

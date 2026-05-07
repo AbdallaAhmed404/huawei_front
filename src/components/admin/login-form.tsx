@@ -24,7 +24,7 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const response = await axios.post("https://huawei-production.up.railway.app/admin/login", {
+      const response = await axios.post("https://api.huaweioman.com/admin/login", {
         email: formData.email,
         password: formData.password,
       });

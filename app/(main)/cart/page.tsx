@@ -110,7 +110,7 @@ export default function CartPage() {
         setLoading(true);
         setError("");
         try {
-            const response = await fetch(`https://huawei-production.up.railway.app/admin/validate-coupon`, {
+            const response = await fetch(`https://api.huaweioman.com/admin/validate-coupon`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

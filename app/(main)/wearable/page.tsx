@@ -98,8 +98,8 @@ export default function WearablePage() {
     const fetchData = async () => {
       try {
         const [catRes, prodRes] = await Promise.all([
-          axios.get("https://huawei-production.up.railway.app/admin/categories"),
-          axios.get("https://huawei-production.up.railway.app/admin/allproduct")
+          axios.get("https://api.huaweioman.com/admin/categories"),
+          axios.get("https://api.huaweioman.com/admin/allproduct")
         ]);
 
         const wearableMain = catRes.data.categories.find(
