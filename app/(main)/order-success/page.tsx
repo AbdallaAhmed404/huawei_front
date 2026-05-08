@@ -125,9 +125,7 @@ function OrderSuccessContent() {
                     </div>
                 </div>
 
-                <p className="text-center text-gray-400 mt-8 text-sm">
-                    {t.supportText}
-                </p>
+                
             </div>
         </main>
     );
