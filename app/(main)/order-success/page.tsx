@@ -1,10 +1,9 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
-import Image from "next/image";
 import Link from "next/link";
-import { useLang } from '../context/LanguageContext'; // تأكد من المسار الصحيح
+import { useLang } from '../context/LanguageContext';
 
 const translations = {
     en: {
@@ -41,9 +40,10 @@ const translations = {
     }
 };
 
-export default function OrderSuccessPage() {
+// مكون داخلي لمعالجة منطق البحث والبيانات
+function OrderSuccessContent() {
     const { lang } = useLang();
-    const t = translations[lang];
+    const t = translations[lang as keyof typeof translations] || translations.en;
     const searchParams = useSearchParams();
     const [isProcessing, setIsProcessing] = useState(true);
     
@@ -68,7 +68,6 @@ export default function OrderSuccessPage() {
         <main className="min-h-screen bg-[#F5F5F5] py-12 px-4" dir={isRTL ? "rtl" : "ltr"}>
             <div className="max-w-2xl mx-auto">
                 <div className="bg-white rounded-[20px] p-8 shadow-sm text-center">
-                    {/* أيقونة النجاح */}
                     <div className="flex justify-center mb-6">
                         <div className="bg-green-100 p-4 rounded-full">
                             <CheckCircle2 className="w-16 h-16 text-green-600" />
@@ -78,7 +77,6 @@ export default function OrderSuccessPage() {
                     <h1 className="text-3xl font-bold text-black mb-2">{t.successTitle}</h1>
                     <p className="text-gray-600 mb-8">{t.successDesc}</p>
 
-                    {/* تفاصيل العملية */}
                     <div className="bg-[#F9F9F9] rounded-[15px] p-6 mb-8 text-start">
                         <h2 className="font-bold text-lg mb-4 border-b pb-2">{t.detailsTitle}</h2>
                         <div className="space-y-3">
@@ -97,14 +95,12 @@ export default function OrderSuccessPage() {
                         </div>
                     </div>
 
-                    {/* رسالة توضيحية */}
                     <div className={`border-${isRTL ? 'r' : 'l'}-4 border-blue-500 bg-blue-50 p-4 mb-8 text-start`}>
                         <p className="text-blue-800 text-sm">
                             {t.confirmationMsg}
                         </p>
                     </div>
 
-                    {/* أزرار التحكم */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link 
                             href="/"
@@ -123,11 +119,23 @@ export default function OrderSuccessPage() {
                     </div>
                 </div>
 
-                {/* تذييل الصفحة */}
                 <p className="text-center text-gray-400 mt-8 text-sm">
                     {t.supportText}
                 </p>
             </div>
         </main>
+    );
+}
+
+// المكون الأساسي مغلف بـ Suspense لحل مشكلة الـ Build Worker Error
+export default function OrderSuccessPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-white">
+                <Loader2 className="w-12 h-12 text-[#CF1322] animate-spin" />
+            </div>
+        }>
+            <OrderSuccessContent />
+        </Suspense>
     );
 }
