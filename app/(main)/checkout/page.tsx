@@ -153,7 +153,7 @@ export default function CheckoutPage() {
     //             total: finalTotal
     //         };
 
-    //         const response = await fetch('http://localhost:4000/user/Order', {
+    //         const response = await fetch('https://api.huaweioman.com/user/Order', {
     //             method: 'POST',
     //             headers: { 'Content-Type': 'application/json' },
     //             body: JSON.stringify(orderPayload)
@@ -172,7 +172,7 @@ export default function CheckoutPage() {
     // const handlePaymobPayment = async () => {
     //     try {
     //         setLoading(true);
-    //         const response = await fetch('http://localhost:4000/user/paymob', { // رابط الـ API بتاعك
+    //         const response = await fetch('https://api.huaweioman.com/user/paymob', { // رابط الـ API بتاعك
     //             method: 'POST',
     //             headers: { 'Content-Type': 'application/json' },
     //             body: JSON.stringify({

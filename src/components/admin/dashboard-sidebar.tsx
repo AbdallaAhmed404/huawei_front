@@ -10,6 +10,7 @@ import {
   ShoppingCart,    // Order
   Settings2,       // Customization
   LogOut,
+  Settings,
   ChevronLeft,
   Menu,
   Ticket
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Orders", icon: ShoppingCart, href: "/admin/order" },
   { label: "Customization", icon: Settings2, href: "/admin/customization" },
   { label: "coupons", icon: Ticket, href: "/admin/coupons" },
+  { label: "settings", icon: Settings, href: "/admin/managers" }
 ];
 
 export default function DashboardSidebar() {

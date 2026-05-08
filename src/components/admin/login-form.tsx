@@ -78,12 +78,6 @@ export default function LoginForm() {
             <div className="space-y-2">
               <div className="flex justify-between items-center px-1">
                 <label className="text-sm font-medium text-gray-300">Password</label>
-                <Link 
-                  href="/admin/register" 
-                  className="text-xs text-[#CF0A2C] hover:text-[#ff1a3d] transition-colors"
-                >
-                  Create account?
-                </Link>
               </div>
               <div className="relative">
                 <input
