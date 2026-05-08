@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import Link from "next/link";
 import { useLang } from '../context/LanguageContext';
-
+import { useCart } from '../context/CartContext'; // تأكد من المسار الصحيح للملف
 const translations = {
     en: {
         confirming: "Confirming payment status...",
@@ -44,6 +44,7 @@ const translations = {
 function OrderSuccessContent() {
     const { lang } = useLang();
     const t = translations[lang as keyof typeof translations] || translations.en;
+    const { clearCart } = useCart();
     const searchParams = useSearchParams();
     const [isProcessing, setIsProcessing] = useState(true);
     
@@ -51,6 +52,11 @@ function OrderSuccessContent() {
     const isRTL = lang === 'ar';
 
     useEffect(() => {
+        const isSuccess = searchParams.get('success') === 'true';
+        
+        if (isSuccess) {
+            clearCart();
+        }
         const timer = setTimeout(() => setIsProcessing(false), 1500);
         return () => clearTimeout(timer);
     }, []);
