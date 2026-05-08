@@ -101,11 +101,7 @@ function OrderSuccessContent() {
                         </div>
                     </div>
 
-                    <div className={`border-${isRTL ? 'r' : 'l'}-4 border-blue-500 bg-blue-50 p-4 mb-8 text-start`}>
-                        <p className="text-blue-800 text-sm">
-                            {t.confirmationMsg}
-                        </p>
-                    </div>
+                    
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link 
@@ -125,7 +121,9 @@ function OrderSuccessContent() {
                     </div>
                 </div>
 
-                
+                <p className="text-center text-gray-400 mt-8 text-sm">
+                    {t.supportText}
+                </p>
             </div>
         </main>
     );
