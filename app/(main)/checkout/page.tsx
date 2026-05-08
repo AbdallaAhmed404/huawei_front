@@ -135,35 +135,129 @@ export default function CheckoutPage() {
     const finalTotal = afterProductDiscount - couponDiscountAmount;
 
     // دالة حفظ الطلب
-    const handleContinue = async () => {
+    // const handleContinue = async () => {
+    //     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+    //         return;
+    //     }
+
+    //     setLoading(true);
+    //     try {
+    //         const orderPayload = {
+    //             userData: formData,
+    //             items: cart.map(item => ({
+    //                 name: item.name,
+    //                 photo: item.image,
+    //                 price: item.price - item.discount,
+    //                 quantity: item.quantity
+    //             })),
+    //             total: finalTotal
+    //         };
+
+    //         const response = await fetch('http://localhost:4000/user/Order', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify(orderPayload)
+    //         });
+
+    //         if (response.ok) {
+    //             setOrderSaved(true);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error saving order:", error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    // const handlePaymobPayment = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const response = await fetch('http://localhost:4000/user/paymob', { // رابط الـ API بتاعك
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({
+    //                 amount_cents: Math.round(finalTotal * 1000), // تحويل الريال لبيسة
+    //                 customer_data: {
+    //                     first_name: formData.firstName,
+    //                     last_name: formData.lastName,
+    //                     email: formData.email,
+    //                     phone: formData.phone
+    //                 }
+    //             })
+    //         });
+
+    //         const data = await response.json();
+    //         if (data.url) {
+    //             window.location.href = data.url; // إعادة توجيه العميل لصفحة Paymob
+    //         }
+    //     } catch (error) {
+    //         console.error("Payment Error:", error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+    // دالة موحدة لحفظ الطلب ثم الانتقال للدفع
+    const handleOrderAndPayment = async () => {
+        // التأكد من ملء البيانات الأساسية
         if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+            alert(lang === 'ar' ? "يرجى ملء جميع الحقول المطلوبة" : "Please fill in all required fields");
             return;
         }
 
         setLoading(true);
         try {
+            // 1. تجهيز بيانات الطلب حسب الموديل الجديد
             const orderPayload = {
                 userData: formData,
                 items: cart.map(item => ({
+                    productId: item._id, // ربط المنتج بـ ID
                     name: item.name,
                     photo: item.image,
                     price: item.price - item.discount,
-                    quantity: item.quantity
+                    quantity: item.quantity,
+                    colorCode: item.colorCode || ""
                 })),
-                total: finalTotal
+                total: finalTotal,
+                isGuest: !isAuthenticated
             };
 
-            const response = await fetch('https://api.huaweioman.com/user/Order', {
+            // 2. حفظ الطلب في قاعدة البيانات (MongoDB)
+            const orderResponse = await fetch('https://api.huaweioman.com/user/Order', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)
             });
 
-            if (response.ok) {
-                setOrderSaved(true);
+            const orderResult = await orderResponse.json();
+
+            if (orderResponse.ok && orderResult._id) {
+                // 3. مناداة API الدفع باستخدام الـ ID الناتج من الخطوة السابقة
+                const paymentResponse = await fetch('https://api.huaweioman.com/user/paymob', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        amount_cents: Math.round(finalTotal * 1000), // تحويل المبلغ لبيسة
+                        orderId: orderResult._id, // إرسال الـ ID لربط العملية بالويب هوك
+                        customer_data: {
+                            first_name: formData.firstName,
+                            last_name: formData.lastName,
+                            email: formData.email,
+                            phone: formData.phone
+                        }
+                    })
+                });
+
+                const paymentData = await paymentResponse.json();
+                if (paymentData.url) {
+                    // الانتقال لصفحة Paymob
+                    window.location.href = paymentData.url;
+                }
+            } else {
+                throw new Error("Failed to save order");
             }
         } catch (error) {
-            console.error("Error saving order:", error);
+            console.error("Process Error:", error);
+            alert(lang === 'ar' ? "حدث خطأ أثناء معالجة الطلب" : "An error occurred while processing the order");
         } finally {
             setLoading(false);
         }
@@ -177,13 +271,13 @@ export default function CheckoutPage() {
                 <div className="flex-1 space-y-6">
                     <section className="bg-white rounded-[15px] p-8 shadow-sm">
                         <h2 className="text-xl font-bold mb-8 flex items-center gap-3">
-                           {t.shippingAddress}
+                            {t.shippingAddress}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="border-b pb-2">
                                 <input
                                     type="text"
-                                   placeholder={t.firstName}
+                                    placeholder={t.firstName}
                                     className="w-full outline-none"
                                     value={formData.firstName}
                                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
@@ -242,40 +336,24 @@ export default function CheckoutPage() {
                         </div>
 
                         <button
-                            onClick={handleContinue}
-                            disabled={loading || orderSaved}
-                            className="mt-8 bg-black text-white px-10 py-3 rounded-[15px] font-bold flex items-center gap-2 hover:bg-gray-800 transition-all disabled:bg-gray-400"
+                            onClick={handleOrderAndPayment}
+                            disabled={loading}
+                            className="w-full mt-8 bg-[#CF1322] text-white py-5 rounded-[15px] font-bold text-lg flex items-center justify-center gap-3 hover:bg-black transition-all shadow-lg disabled:bg-gray-400"
                         >
-                            {loading ? <Loader2 className="animate-spin" size={18} /> : null}
-                            {orderSaved ? t.addressSaved : t.continue}
+                            {loading ? (
+                                <Loader2 className="animate-spin" size={24} />
+                            ) : (
+                                <>
+                                    <ShieldCheck size={22} />
+                                    <span>
+                                        {lang === 'ar' ? `الاستمرار للدفع - ${finalTotal.toLocaleString()} ريال` : `Continue to Payment - OMR ${finalTotal.toLocaleString()}`}
+                                    </span>
+                                </>
+                            )}
                         </button>
                     </section>
 
-                    <section className="bg-white rounded-[15px] p-8 shadow-sm">
-                        <h2 className="text-xl font-bold mb-8 flex items-center gap-3">
-                            Payment Method
-                        </h2>
-                        <div className={`bg-gray-50 border-2 rounded-[15px] p-6 flex justify-between items-center transition-all ${orderSaved ? 'border-black opacity-100' : 'border-gray-200 opacity-50'}`}>
-                            <div className="flex items-center gap-4">
-                                <ShieldCheck className="text-green-600" />
-                                <div>
-                                    <p className="font-bold text-sm">Credit / Debit Card</p>
-                                    <p className="text-xs text-gray-500">Secure payment via checkout gateway</p>
-                                </div>
-                            </div>
-                            <div className="flex gap-2">
-                                <img src="/visa-logo.png" className="h-4" alt="visa" />
-                                <img src="/master-logo.png" className="h-4" alt="mastercard" />
-                            </div>
-                        </div>
-                    </section>
 
-                    <button
-                        disabled={!orderSaved}
-                        className={`w-full py-5 rounded-[15px] font-bold text-lg transition-all ${orderSaved ? 'bg-[#CF1322] text-white hover:bg-black' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
-                    >
-                        Pay OMR {finalTotal.toLocaleString()}
-                    </button>
                 </div>
 
                 {/* اليمين: ملخص الطلب والمنتجات */}
