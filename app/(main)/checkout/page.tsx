@@ -218,6 +218,7 @@ export default function CheckoutPage() {
                     colorCode: item.colorCode || ""
                 })),
                 total: finalTotal,
+                appliedCouponCode: appliedCoupon ? appliedCoupon.code : null,
                 isGuest: !isAuthenticated
             };
 
