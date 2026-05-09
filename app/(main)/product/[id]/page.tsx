@@ -258,31 +258,39 @@ export default function ProductPurchasePage() {
                         </div>
                     </div> */}
 
-                    <div className="w-full lg:w-[60%] lg:sticky lg:top-24 h-full group">
-                        <div className="rounded-[15px] overflow-hidden relative flex items-center bg-white min-h-[500px]">
+                    <div className="w-full lg:w-[60%] lg:sticky lg:top-24 h-fit group">
+                        {/* الحاوية الرئيسية للصور - أضفنا h-auto أو ارتفاع محدد للموبايل */}
+                        <div className="rounded-[15px] overflow-hidden relative flex items-center bg-white min-h-[400px] md:min-h-[500px]">
 
-                            {/* زر السهم الأيسر */}
+                            {/* زر السهم الأيسر - مخفي في الموبايل لتسهيل التصفح باللمس (اختياري) */}
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={prevImage}
-                                    className="absolute left-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                    className="absolute left-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hidden md:block"
                                 >
                                     <ChevronLeft size={24} className="text-black" />
                                 </button>
                             )}
 
                             {/* الحاوية المتحركة (Slider Track) */}
-                            {/* هنا يكمن السر: نستخدم transform لتحريك الصف بالكامل بناءً على index الصورة */}
                             <div
                                 className="flex transition-transform duration-500 ease-in-out w-full h-full"
-                                style={{ transform: `translateX(${lang === 'ar' ? (currentImageIndex * 100) : -(currentImageIndex * 100)}%)` }}
+                                style={{
+                                    transform: `translateX(${lang === 'ar' ? (currentImageIndex * 100) : -(currentImageIndex * 100)}%)`,
+                                    // التأكد من أن الـ Direction لا يؤثر على الحسابات
+                                    direction: 'ltr'
+                                }}
                             >
                                 {currentImages.map((img, idx) => (
-                                    <div key={idx} className="min-w-full flex-shrink-0 flex items-center justify-center p-8">
+                                    <div
+                                        key={idx}
+                                        className="w-full flex-shrink-0 flex items-center justify-center p-4 md:p-8"
+                                        style={{ minWidth: '100%' }} // تأكيد أن كل شريحة تأخذ 100% بالظبط
+                                    >
                                         <img
                                             src={img}
                                             alt={`${product.name} - ${idx}`}
-                                            className="w-full h-full object-contain max-h-[70vh]"
+                                            className="w-full h-auto max-h-[50vh] md:max-h-[70vh] object-contain select-none"
                                         />
                                     </div>
                                 ))}
@@ -292,7 +300,7 @@ export default function ProductPurchasePage() {
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={nextImage}
-                                    className="absolute right-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                    className="absolute right-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hidden md:block"
                                 >
                                     <ChevronRight size={24} className="text-black" />
                                 </button>
@@ -300,12 +308,14 @@ export default function ProductPurchasePage() {
                         </div>
 
                         {/* مؤشرات النقاط (Dots) */}
-                        <div className="flex justify-center gap-2 mt-6">
-                            {currentImages.map((_, i: number) => (
+                        <div className="flex justify-center gap-2 mt-4 md:mt-6">
+                            {currentImages.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setCurrentImageIndex(i)}
-                                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentImageIndex ? 'bg-black w-4' : 'bg-gray-300'}`}
+                                    className={`w-2 h-2 rounded-full transition-all duration-300 ${i === currentImageIndex ? 'bg-black w-6' : 'bg-gray-300'
+                                        }`}
+                                    aria-label={`Go to slide ${i + 1}`}
                                 />
                             ))}
                         </div>
