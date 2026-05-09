@@ -21,13 +21,13 @@ const translations = {
         gallery: "Gallery",
         specifications: "Specifications",
         omr: "OMR",
-        Model:"Model",
-        Color:"Color",
-        Save:"Save",
-        stock:" This color is currently out of stock",
-        Qty:"Qty",
-        cart:"Add to cart",
-        Check:"Check out"
+        Model: "Model",
+        Color: "Color",
+        Save: "Save",
+        stock: " This color is currently out of stock",
+        Qty: "Qty",
+        cart: "Add to cart",
+        Check: "Check out"
     },
     ar: {
         back: "رجوع",
@@ -38,13 +38,13 @@ const translations = {
         gallery: "معرض الصور",
         specifications: "المواصفات",
         omr: "ر.ع.",
-        Model:"موديل",
-        Color:"اللون",
-        Save:"وفر",
-        stock:"هذا اللون غير متوفر",
-        Qty:"الكمية",
-        cart:"اضف للعربة",
-        Check:"اتمام الشراء"
+        Model: "موديل",
+        Color: "اللون",
+        Save: "وفر",
+        stock: "هذا اللون غير متوفر",
+        Qty: "الكمية",
+        cart: "اضف للعربة",
+        Check: "اتمام الشراء"
     }
 };
 // --- تعريف الأنواع (Interfaces) لمنع أخطاء TypeScript ---
@@ -86,7 +86,7 @@ export default function ProductPurchasePage() {
     const router = useRouter();
     const { id } = useParams();
     const [product, setProduct] = useState<Product | null>(null);
-    const [gallery, setGallery] = useState<GalleryItem[]>([]); 
+    const [gallery, setGallery] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [selectedColor, setSelectedColor] = useState<ColorVariant | null>(null);
     const { addToCart } = useCart();
@@ -163,13 +163,13 @@ export default function ProductPurchasePage() {
         });
 
         if (isAuthenticated) {
-        // إذا كان مسجل دخول، توجه مباشرة لصفحة التشيك أوت
-        router.push('/checkout');
-    } else {
-        // إذا لم يكن مسجلاً، توجه لصفحة الـ Login أولاً
-        // يمكنك إضافة query parameter لإعادته للتشيك أوت بعد الدخول
-        router.push('/checkout-method');
-    }
+            // إذا كان مسجل دخول، توجه مباشرة لصفحة التشيك أوت
+            router.push('/checkout');
+        } else {
+            // إذا لم يكن مسجلاً، توجه لصفحة الـ Login أولاً
+            // يمكنك إضافة query parameter لإعادته للتشيك أوت بعد الدخول
+            router.push('/checkout-method');
+        }
     };
 
     // إعادة ضبط مؤشر الصورة عند تغيير اللون المختار
@@ -182,7 +182,7 @@ export default function ProductPurchasePage() {
         setGallerySlideIndices(prev => {
             const newState = [...prev];
             const totalImages = gallery[sectionIdx].images.length;
-            const maxScroll = totalImages - 4; 
+            const maxScroll = totalImages - 4;
             newState[sectionIdx] = newState[sectionIdx] >= maxScroll ? 0 : newState[sectionIdx] + 1;
             return newState;
         });
@@ -219,29 +219,40 @@ export default function ProductPurchasePage() {
 
                     {/* 1. الجانب الأيسر: معرض الصور المطور */}
                     <div className="w-full lg:w-[60%] lg:sticky lg:top-24 h-full group">
-                        <div className="rounded-[15px] overflow-hidden relative flex items-center justify-center p-8 h-full min-h-[500px] bg-white">
+                        <div className="rounded-[15px] overflow-hidden relative flex items-center bg-white min-h-[500px]">
 
-                            {/* زر السهم الأيسر - يظهر فقط عند الـ Hover وإذا كان هناك أكثر من صورة */}
+                            {/* زر السهم الأيسر */}
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={prevImage}
-                                    className="absolute left-4 z-10 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                    className="absolute left-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
                                 >
                                     <ChevronLeft size={24} className="text-black" />
                                 </button>
                             )}
 
-                            <img
-                                src={currentImages[currentImageIndex]}
-                                alt={product.name}
-                                className="w-full h-full object-contain max-h-[70vh] transition-all duration-500"
-                            />
+                            {/* الحاوية المتحركة (Slider Track) */}
+                            {/* هنا يكمن السر: نستخدم transform لتحريك الصف بالكامل بناءً على index الصورة */}
+                            <div
+                                className="flex transition-transform duration-500 ease-in-out w-full h-full"
+                                style={{ transform: `translateX(${lang === 'ar' ? (currentImageIndex * 100) : -(currentImageIndex * 100)}%)` }}
+                            >
+                                {currentImages.map((img, idx) => (
+                                    <div key={idx} className="min-w-full flex-shrink-0 flex items-center justify-center p-8">
+                                        <img
+                                            src={img}
+                                            alt={`${product.name} - ${idx}`}
+                                            className="w-full h-full object-contain max-h-[70vh]"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
 
-                            {/* زر السهم الأيمن - يظهر فقط عند الـ Hover وإذا كان هناك أكثر من صورة */}
+                            {/* زر السهم الأيمن */}
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={nextImage}
-                                    className="absolute right-4 z-10 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                    className="absolute right-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
                                 >
                                     <ChevronRight size={24} className="text-black" />
                                 </button>
@@ -445,17 +456,17 @@ export default function ProductPurchasePage() {
                                             {item.label}
                                         </h3>
                                     </div>
-                                    
+
                                     <div className="relative group/slider w-full">
                                         <div className="overflow-hidden rounded-[20px]">
-                                            <div 
+                                            <div
                                                 className="flex transition-transform duration-500 ease-in-out gap-4"
                                                 style={{ transform: `translateX(-${gallerySlideIndices[idx] * 25}%)` }}
                                             >
                                                 {item.images.map((imgUrl, imgIdx) => (
                                                     <div key={imgIdx} className="min-w-[calc(25%-12px)] relative bg-gray-50 rounded-[15px] overflow-hidden aspect-square border border-gray-100">
-                                                        <img 
-                                                            src={imgUrl} 
+                                                        <img
+                                                            src={imgUrl}
                                                             alt={`${item.label} ${imgIdx + 1}`}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -467,13 +478,13 @@ export default function ProductPurchasePage() {
                                         {/* أسهم التنقل للجاليري - تظهر فقط إذا كان هناك أكثر من 4 صور */}
                                         {item.images.length > 4 && (
                                             <>
-                                                <button 
+                                                <button
                                                     onClick={() => prevGallerySlide(idx)}
                                                     className="absolute -left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
                                                 >
                                                     <ChevronLeft size={24} />
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => nextGallerySlide(idx)}
                                                     className="absolute -right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
                                                 >
