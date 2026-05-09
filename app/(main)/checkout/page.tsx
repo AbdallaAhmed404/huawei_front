@@ -348,7 +348,7 @@ export default function CheckoutPage() {
                                 <>
                                     <ShieldCheck size={22} />
                                     <span>
-                                        {lang === 'ar' ? `الاستمرار للدفع - ${finalTotal.toLocaleString()} ريال` : `Continue to Payment - OMR ${finalTotal.toLocaleString()}`}
+                                        {lang === 'ar' ? `الاستمرار للدفع` : `Continue to Payment`}
                                     </span>
                                 </>
                             )}
