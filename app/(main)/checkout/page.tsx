@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     const { lang } = useLang();
     const t = translations[lang];
     const { cart, appliedCoupon } = useCart();
-    const { isAuthenticated } = useAuth(); // سحب حالة التسجيل
+    const { isAuthenticated, user} = useAuth(); // سحب حالة التسجيل
     const [loading, setLoading] = useState(false);
     const [orderSaved, setOrderSaved] = useState(false);
 
@@ -208,6 +208,7 @@ export default function CheckoutPage() {
         try {
             // 1. تجهيز بيانات الطلب حسب الموديل الجديد
             const orderPayload = {
+                user: isAuthenticated ? user?._id : null,
                 userData: formData,
                 items: cart.map(item => ({
                     productId: item._id, // ربط المنتج بـ ID
