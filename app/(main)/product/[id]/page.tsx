@@ -266,7 +266,7 @@ export default function ProductPurchasePage() {
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={prevImage}
-                                    className="absolute left-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hidden md:block"
+                                    className="absolute left-4 z-20 p-2 rounded-full bg-transparent   lg:group-hover:opacity-100 transition-opacity duration-300 block"
                                 >
                                     <ChevronLeft size={24} className="text-black" />
                                 </button>
@@ -300,7 +300,7 @@ export default function ProductPurchasePage() {
                             {currentImages.length > 1 && (
                                 <button
                                     onClick={nextImage}
-                                    className="absolute right-4 z-20 p-2 rounded-full bg-white/80 shadow-md opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 hover:bg-white hidden md:block"
+                                    className="absolute right-4 z-20 p-2 rounded-full bg-transparent  lg:group-hover:opacity-100 transition-opacity duration-300  block"
                                 >
                                     <ChevronRight size={24} className="text-black" />
                                 </button>
@@ -322,7 +322,7 @@ export default function ProductPurchasePage() {
                     </div>
 
                     {/* 2. الجانب الأيمن: الخيارات */}
-                    <div className="w-full lg:w-[40%] space-y-8 text-left border-l border-gray-90 pl-5">
+                    <div className="w-full lg:w-[40%] space-y-8 text-left ">
                         <div>
                             <h1 className="text-[32px] md:text-[40px] font-bold text-black mt-2 leading-tight">
                                 {product.name}
