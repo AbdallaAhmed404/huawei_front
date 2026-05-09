@@ -62,6 +62,7 @@ interface ColorVariant {
 interface GalleryItem {
     label: string;
     images: string[];
+    isGrid?: boolean;
 }
 
 interface Product {
@@ -537,58 +538,98 @@ export default function ProductPurchasePage() {
                 )} */}
 
                 {/* --- قسم الجاليري بنظام Grid ذكي --- */}
+                {/* --- قسم الجاليري المتطور (Grid أو Slider) --- */}
                 {gallery.length > 0 && (
                     <section className="mt-24 border-t border-gray-100 pt-16">
-                        <div className="space-y-16">
+                        <div className="space-y-24">
                             {gallery.map((item, idx) => (
                                 <div key={idx} className="space-y-6">
+                                    {/* عنوان المجموعة مع خط أحمر جانبي */}
                                     <div className="flex justify-start">
-                                        <h3 className="text-[22px] font-bold text-black pl-4 border-l-4 border-[#CF1322]">
+                                        <h3 className="text-[22px] font-bold text-black pl-4 border-l-4 border-[#CF1322] text-left">
                                             {item.label}
                                         </h3>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-[200px_200px] md:grid-rows-[300px_300px] gap-0 overflow-hidden rounded-[20px] border border-gray-200">
-                                        {item.images.map((imgUrl, imgIdx) => {
-                                            let gridSpan = "col-span-1 row-span-1";
+                                    {item.isGrid ? (
+                                        /* --- أولاً: عرض نظام الـ Grid الذكي --- */
+                                        <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-[200px_200px] md:grid-rows-[300px_300px] gap-0 overflow-hidden rounded-[20px] border border-gray-200">
+                                            {item.images.map((imgUrl, imgIdx) => {
+                                                let gridSpan = "col-span-1 row-span-1";
+                                                if (item.images.length === 1) gridSpan = "col-span-4 row-span-2";
+                                                else if (item.images.length === 2) gridSpan = "col-span-2 row-span-2";
+                                                else if (imgIdx === 0) gridSpan = "col-span-2 row-span-2";
+                                                else if (imgIdx === 1 && item.images.length > 2) gridSpan = "col-span-2 row-span-1";
 
-                                            if (item.images.length === 1) {
-                                                gridSpan = "col-span-4 row-span-2";
-                                            } else if (item.images.length === 2) {
-                                                gridSpan = "col-span-2 row-span-2";
-                                            } else if (imgIdx === 0) {
-                                                gridSpan = "col-span-2 row-span-2";
-                                            } else if (imgIdx === 1 && item.images.length > 2) {
-                                                gridSpan = "col-span-2 row-span-1";
-                                            }
-
-                                            return (
+                                                return (
+                                                    <div
+                                                        key={imgIdx}
+                                                        onClick={() => setSelectedImage(imgUrl)}
+                                                        className={`${gridSpan} relative group overflow-hidden border-[0.5px] border-white cursor-pointer`}
+                                                    >
+                                                        <img
+                                                            src={imgUrl}
+                                                            alt={`${item.label} ${imgIdx + 1}`}
+                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                        />
+                                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    ) : (
+                                        /* --- ثانياً: عرض نظام السلايدر مع الأسهم --- */
+                                        <div className="relative group/slider w-full">
+                                            <div className="overflow-hidden rounded-[20px]">
                                                 <div
-                                                    key={imgIdx}
-                                                    onClick={() => setSelectedImage(imgUrl)}
-                                                    className={`${gridSpan} relative group overflow-hidden border-[0.5px] border-white`}
+                                                    className="flex transition-transform duration-500 ease-in-out gap-4"
+                                                    style={{ transform: `translateX(${lang === 'ar' ? (gallerySlideIndices[idx] * 25) : -(gallerySlideIndices[idx] * 25)}%)` }}
                                                 >
-                                                    <img
-                                                        src={imgUrl}
-                                                        alt={`${item.label} ${imgIdx + 1}`}
-                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                                                    {item.images.map((imgUrl, imgIdx) => (
+                                                        <div
+                                                            key={imgIdx}
+                                                            onClick={() => setSelectedImage(imgUrl)}
+                                                            className="min-w-[calc(25%-12px)] relative bg-gray-50 rounded-[15px] overflow-hidden aspect-square border border-gray-100 cursor-pointer group"
+                                                        >
+                                                            <img
+                                                                src={imgUrl}
+                                                                alt={`${item.label} ${imgIdx + 1}`}
+                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            />
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            );
-                                        })}
-                                    </div>
+                                            </div>
+
+                                            {/* أسهم التنقل للسلايدر - تظهر فقط إذا كان عدد الصور أكبر من 4 */}
+                                            {item.images.length > 4 && (
+                                                <>
+                                                    <button
+                                                        onClick={() => prevGallerySlide(idx)}
+                                                        className="absolute -left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
+                                                    >
+                                                        <ChevronLeft size={24} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => nextGallerySlide(idx)}
+                                                        className="absolute -right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
+                                                    >
+                                                        <ChevronRight size={24} />
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
 
-                        {/* --- المودال (البوب أب) بخلفية Blur ومؤشر عادي --- */}
+                        {/* --- المودال الموحد (البوب أب) بخلفية Blur --- */}
                         {selectedImage && (
                             <div
                                 className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 transition-all duration-300"
                                 onClick={() => setSelectedImage(null)}
                             >
-                                {/* زر الإغلاق */}
                                 <button
                                     className="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition-colors z-[1000]"
                                     onClick={() => setSelectedImage(null)}
@@ -599,7 +640,7 @@ export default function ProductPurchasePage() {
                                 <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
                                     <img
                                         src={selectedImage}
-                                        alt="Full size"
+                                        alt="Full size view"
                                         className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in duration-300"
                                         onClick={(e) => e.stopPropagation()}
                                     />

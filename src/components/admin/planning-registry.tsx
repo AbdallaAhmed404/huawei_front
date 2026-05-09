@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { 
-  ImageIcon, Layout, Plus, Trash2, Smartphone, Tablet, Watch, Headphones, 
+import {
+  ImageIcon, Layout, Plus, Trash2, Smartphone, Tablet, Watch, Headphones,
   CheckCircle, Loader2, X, Link as LinkIcon, Type, Images, Edit, Save, Upload as UploadIcon, Monitor
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -11,17 +11,17 @@ import { cn } from "@/lib/utils";
 // --- الهيكل الثابت للكاتيجوري ---
 const FULL_CATEGORIES = [
   { id: 1, name: "Smartphone", icon: <Smartphone size={24} />, subs: ["Mate Series", "Pura Series", "nova Series"] },
-  { id: 3, name: "Tablet", icon: <Tablet size={24} />, subs: ["HUAWEI MatePad Pro Series", "HUAWEI MatePad Mini Series", "HUAWEI MatePad Series","HUAWEI MatePad SE Series"] },
-  { id: 4, name: "Wearable", icon: <Watch size={24} />, subs: ["WATCH Ultimate Series", "WATCH Series", "WATCH GT Series","WATCH FIT Series","WATCH D Series","Band Series"] },
-  { id: 5, name: "Audio", icon: <Headphones size={24} />, subs: ["FreeBuds Series", "FreeClip Series", "FreeArc Series","FreeLace Series","Eyewear"] },
+  { id: 3, name: "Tablet", icon: <Tablet size={24} />, subs: ["HUAWEI MatePad Pro Series", "HUAWEI MatePad Mini Series", "HUAWEI MatePad Series", "HUAWEI MatePad SE Series"] },
+  { id: 4, name: "Wearable", icon: <Watch size={24} />, subs: ["WATCH Ultimate Series", "WATCH Series", "WATCH GT Series", "WATCH FIT Series", "WATCH D Series", "Band Series"] },
+  { id: 5, name: "Audio", icon: <Headphones size={24} />, subs: ["FreeBuds Series", "FreeClip Series", "FreeArc Series", "FreeLace Series", "Eyewear"] },
 ];
 
 export default function StoreCustomizer() {
   const [activeSection, setActiveSection] = useState<"slider" | "categories" | "popup" | "gallery">("slider");
-  
+
   // --- States عامة ---
   const [isLoading, setIsLoading] = useState(false);
-  const [products, setProducts] = useState<any[]>([]); 
+  const [products, setProducts] = useState<any[]>([]);
 
   // --- States السلايدر ---
   const [sliders, setSliders] = useState<any[]>([]);
@@ -45,7 +45,7 @@ export default function StoreCustomizer() {
   // --- States الجاليري المحسن ---
   const [isGalleryModalOpen, setIsGalleryModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState("");
-  const [galleryItems, setGalleryItems] = useState<{label: string, images: string[]}[]>([]);
+  const [galleryItems, setGalleryItems] = useState<{ label: string, isGrid: boolean, images: string[] }[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
@@ -84,56 +84,56 @@ export default function StoreCustomizer() {
   };
 
   const fetchGallery = async (id: string) => {
-      if(!id) return;
-      setIsSyncing(true);
-      try {
-          const res = await axios.get(`https://api.huaweioman.com/admin/gallery/${id}`);
-          setGalleryItems(res.data.galleryItems || []);
-      } catch (err) { 
-          setGalleryItems([]); 
-          console.log("No existing gallery for this product");
-      } finally { setIsSyncing(false); }
+    if (!id) return;
+    setIsSyncing(true);
+    try {
+      const res = await axios.get(`https://api.huaweioman.com/admin/gallery/${id}`);
+      setGalleryItems(res.data.galleryItems || []);
+    } catch (err) {
+      setGalleryItems([]);
+      console.log("No existing gallery for this product");
+    } finally { setIsSyncing(false); }
   };
 
   // --- منطق الجاليري ---
-  const handleAddGroup = () => setGalleryItems([...galleryItems, { label: "", images: [] }]);
-  
+  const handleAddGroup = () => setGalleryItems([...galleryItems, { label: "", isGrid: false, images: [] }]);
+
   const handleUploadImagesToGroup = async (index: number, files: FileList | null) => {
-      if (!files) return;
-      setIsSyncing(true);
-      try {
-          const uploadedUrls = [];
-          for (let i = 0; i < files.length; i++) {
-              const file = files[i];
-              const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
-                  folder: "product-gallery", filename: file.name, contentType: file.type
-              });
-              await axios.put(uploadData.signedUrl, file, { headers: { "Content-Type": file.type } });
-              uploadedUrls.push(uploadData.publicUrl);
-          }
-          const updated = [...galleryItems];
-          updated[index].images = [...updated[index].images, ...uploadedUrls];
-          setGalleryItems(updated);
-      } catch (err) { alert("Image upload failed"); }
-      finally { setIsSyncing(false); }
+    if (!files) return;
+    setIsSyncing(true);
+    try {
+      const uploadedUrls = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
+          folder: "product-gallery", filename: file.name, contentType: file.type
+        });
+        await axios.put(uploadData.signedUrl, file, { headers: { "Content-Type": file.type } });
+        uploadedUrls.push(uploadData.publicUrl);
+      }
+      const updated = [...galleryItems];
+      updated[index].images = [...updated[index].images, ...uploadedUrls];
+      setGalleryItems(updated);
+    } catch (err) { alert("Image upload failed"); }
+    finally { setIsSyncing(false); }
   };
 
   const handleSyncGallery = async () => {
-      if (!selectedProductId) return alert("Select a product first");
-      setIsSyncing(true);
-      try {
-          await axios.post("https://api.huaweioman.com/admin/gallery/sync", {
-              productId: selectedProductId,
-              galleryItems
-          });
-          setIsGalleryModalOpen(false);
-      } catch (err) { alert("Sync failed"); }
-      finally { setIsSyncing(false); }
+    if (!selectedProductId) return alert("Select a product first");
+    setIsSyncing(true);
+    try {
+      await axios.post("https://api.huaweioman.com/admin/gallery/sync", {
+        productId: selectedProductId,
+        galleryItems
+      });
+      setIsGalleryModalOpen(false);
+    } catch (err) { alert("Sync failed"); }
+    finally { setIsSyncing(false); }
   };
 
   // --- منطق السلايدر والكاتيجوري والبوب اب ---
   const handleAddSlider = async () => {
-    if (!newSlider.file) return ;
+    if (!newSlider.file) return;
     try {
       setIsLoading(true);
       const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
@@ -177,7 +177,7 @@ export default function StoreCustomizer() {
   };
 
   const handleUpdatePopup = async () => {
-    if (!newPopup.file) return ;
+    if (!newPopup.file) return;
     try {
       setPopupLoading(true);
       const { data: uploadData } = await axios.post("https://api.huaweioman.com/admin/get-upload-url", {
@@ -195,7 +195,7 @@ export default function StoreCustomizer() {
 
   return (
     <div className="flex flex-col min-h-screen text-white font-sans pb-20 bg-black">
-      
+
       {/* Header */}
       <section className="p-8 border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-30 flex justify-between items-center">
         <div>
@@ -228,7 +228,7 @@ export default function StoreCustomizer() {
       </div>
 
       <div className="p-8 max-w-7xl mx-auto w-full">
-        
+
         {/* --- MODAL الجاليري المحسن --- */}
         {isGalleryModalOpen && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
@@ -241,10 +241,10 @@ export default function StoreCustomizer() {
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-zinc-400 uppercase">Select Target Product</label>
-                  <select 
+                  <select
                     className="w-full bg-black border border-white/10 p-4 rounded-2xl outline-none text-sm text-white cursor-pointer"
                     value={selectedProductId}
-                    onChange={(e) => {setSelectedProductId(e.target.value); fetchGallery(e.target.value);}}
+                    onChange={(e) => { setSelectedProductId(e.target.value); fetchGallery(e.target.value); }}
                   >
                     <option value="">-- Click to Choose a Product --</option>
                     {products.map(p => <option key={p._id} value={p._id}>{p.name}</option>)}
@@ -252,74 +252,89 @@ export default function StoreCustomizer() {
                 </div>
 
                 {selectedProductId && (
-                   <div className="space-y-8">
-                      <div className="flex justify-between items-center">
-                        <h4 className="text-sm font-bold text-white uppercase">Gallery Content Groups</h4>
-                        <button onClick={handleAddGroup} className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all">
-                           <Plus size={14} /> Add Group
+                  <div className="space-y-8">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-sm font-bold text-white uppercase">Gallery Content Groups</h4>
+                      <button onClick={handleAddGroup} className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all">
+                        <Plus size={14} /> Add Group
+                      </button>
+                    </div>
+
+                    {galleryItems.map((item, idx) => (
+                      <div key={idx} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4 relative group/box">
+                        <button
+                          onClick={() => setGalleryItems(galleryItems.filter((_, i) => i !== idx))}
+                          className="absolute top-4 right-4 p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
+                        >
+                          <Trash2 size={16} />
                         </button>
-                      </div>
 
-                      {galleryItems.map((item, idx) => (
-                        <div key={idx} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4 relative group/box">
-                           <button 
-                             onClick={() => setGalleryItems(galleryItems.filter((_, i) => i !== idx))} 
-                             className="absolute top-4 right-4 p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
-                           >
-                             <Trash2 size={16} />
-                           </button>
-
-                           <div className="space-y-2">
-                              <label className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest">Group Title</label>
-                              <input 
-                                type="text" 
-                                placeholder="e.g. Design, Performance..." 
-                                className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none text-sm focus:border-white/40 transition-all"
-                                value={item.label}
-                                onChange={(e) => {
-                                   const updated = [...galleryItems];
-                                   updated[idx].label = e.target.value;
-                                   setGalleryItems(updated);
-                                }}
-                              />
-                           </div>
-                           
-                           <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                              {item.images.map((img, imgIdx) => (
-                                <div key={imgIdx} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group/img">
-                                  <img src={img} className="w-full h-full object-cover" />
-                                  <button 
-                                    onClick={() => {
-                                      const updated = [...galleryItems];
-                                      updated[idx].images = updated[idx].images.filter((_, i) => i !== imgIdx);
-                                      setGalleryItems(updated);
-                                    }}
-                                    className="absolute inset-0 bg-red-500/80 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
-                                  >
-                                    <Trash2 size={20} />
-                                  </button>
-                                </div>
-                              ))}
-                              <label className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all gap-2">
-                                <input type="file" multiple className="hidden" onChange={(e) => handleUploadImagesToGroup(idx, e.target.files)} />
-                                <UploadIcon size={20} className="text-zinc-600" />
-                                <span className="text-[10px] font-bold text-zinc-500 uppercase">Upload</span>
-                              </label>
-                           </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest">Group Title</label>
+                          <input
+                            type="text"
+                            placeholder="e.g. Design, Performance..."
+                            className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none text-sm focus:border-white/40 transition-all"
+                            value={item.label}
+                            onChange={(e) => {
+                              const updated = [...galleryItems];
+                              updated[idx].label = e.target.value;
+                              setGalleryItems(updated);
+                            }}
+                          />
                         </div>
-                      ))}
-                   </div>
+                        <div className="flex items-center gap-3 bg-black/30 border border-white/5 p-4 rounded-xl h-[54px]">
+                          <input
+                            type="checkbox"
+                            id={`grid-${idx}`}
+                            className="w-5 h-5 accent-white cursor-pointer"
+                            checked={item.isGrid || false}
+                            onChange={(e) => {
+                              const updated = [...galleryItems];
+                              updated[idx].isGrid = e.target.checked;
+                              setGalleryItems(updated);
+                            }}
+                          />
+                          <label htmlFor={`grid-${idx}`} className="text-xs font-bold text-zinc-400 cursor-pointer select-none">
+                            Enable Smart Grid
+                          </label>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
+                          {item.images.map((img, imgIdx) => (
+                            <div key={imgIdx} className="relative aspect-square rounded-2xl overflow-hidden border border-white/10 group/img">
+                              <img src={img} className="w-full h-full object-cover" />
+                              <button
+                                onClick={() => {
+                                  const updated = [...galleryItems];
+                                  updated[idx].images = updated[idx].images.filter((_, i) => i !== imgIdx);
+                                  setGalleryItems(updated);
+                                }}
+                                className="absolute inset-0 bg-red-500/80 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
+                              >
+                                <Trash2 size={20} />
+                              </button>
+                            </div>
+                          ))}
+                          <label className="aspect-square border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-all gap-2">
+                            <input type="file" multiple className="hidden" onChange={(e) => handleUploadImagesToGroup(idx, e.target.files)} />
+                            <UploadIcon size={20} className="text-zinc-600" />
+                            <span className="text-[10px] font-bold text-zinc-500 uppercase">Upload</span>
+                          </label>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </div>
 
               {selectedProductId && (
                 <div className="pt-6 border-t border-white/5">
-                  <button 
+                  <button
                     onClick={handleSyncGallery}
                     disabled={isSyncing}
                     className="w-full bg-white text-black py-4 rounded-2xl font-black text-sm uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all"
                   >
-                    {isSyncing ? <Loader2 className="animate-spin" /> : <Save size={18} />} 
+                    {isSyncing ? <Loader2 className="animate-spin" /> : <Save size={18} />}
                     Save Gallery Changes
                   </button>
                 </div>
@@ -330,34 +345,34 @@ export default function StoreCustomizer() {
 
         {/* Sections UI */}
         {activeSection === "slider" && (
-  <div className="space-y-6">
-    <div className="flex justify-between items-center">
-      <h2 className="text-xl font-bold uppercase tracking-tight">Home Sliders</h2>
-      <button onClick={() => setIsModalOpen(true)} className="text-xs bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
-        <Plus size={16} /> Add Banner
-      </button>
-    </div>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {sliders.map((slide) => (
-        <div key={slide._id} className="space-y-3">
-          <div className="relative group bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden">
-            <img src={slide.imageUrl} className="w-full aspect-[21/9] object-cover opacity-80" />
-            <button onClick={() => handleDeleteSlider(slide._id)} className="absolute top-4 right-4 p-3 bg-red-500 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-all">
-              <Trash2 size={18} />
-            </button>
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold uppercase tracking-tight">Home Sliders</h2>
+              <button onClick={() => setIsModalOpen(true)} className="text-xs bg-white/5 border border-white/10 px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-white/10 transition-all">
+                <Plus size={16} /> Add Banner
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {sliders.map((slide) => (
+                <div key={slide._id} className="space-y-3">
+                  <div className="relative group bg-[#0a0a0a] border border-white/10 rounded-[2.5rem] overflow-hidden">
+                    <img src={slide.imageUrl} className="w-full aspect-[21/9] object-cover opacity-80" />
+                    <button onClick={() => handleDeleteSlider(slide._id)} className="absolute top-4 right-4 p-3 bg-red-500 text-white rounded-2xl opacity-0 group-hover:opacity-100 transition-all">
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
+                  {/* عرض اللينك هنا */}
+                  <div className="flex items-center gap-2 px-4 text-zinc-500">
+                    <LinkIcon size={14} />
+                    <a href={slide.link} target="_blank" className="text-xs hover:text-white truncate">
+                      {slide.link || "No link provided"}
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-          {/* عرض اللينك هنا */}
-          <div className="flex items-center gap-2 px-4 text-zinc-500">
-            <LinkIcon size={14} />
-            <a href={slide.link} target="_blank" className="text-xs hover:text-white truncate">
-              {slide.link || "No link provided"}
-            </a>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+        )}
 
         {activeSection === "gallery" && (
           <div className="space-y-8">
@@ -366,11 +381,11 @@ export default function StoreCustomizer() {
                 <h2 className="text-xl font-bold uppercase tracking-tight">Active Galleries</h2>
                 <p className="text-xs text-zinc-500 mt-1">Products with deep immersive content.</p>
               </div>
-              <button onClick={() => {setSelectedProductId(""); setGalleryItems([]); setIsGalleryModalOpen(true);}} className="bg-white text-black px-8 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2">
+              <button onClick={() => { setSelectedProductId(""); setGalleryItems([]); setIsGalleryModalOpen(true); }} className="bg-white text-black px-8 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2">
                 <Plus size={16} /> New Gallery
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {products.map(product => (
                 <div key={product._id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2.5rem] hover:border-white/20 transition-all">
@@ -379,8 +394,8 @@ export default function StoreCustomizer() {
                   </div>
                   <h3 className="font-bold text-md truncate">{product.name}</h3>
                   <p className="text-zinc-500 text-xs mb-6">{product.modelName}</p>
-                  <button 
-                    onClick={() => {setSelectedProductId(product._id); fetchGallery(product._id); setIsGalleryModalOpen(true);}}
+                  <button
+                    onClick={() => { setSelectedProductId(product._id); fetchGallery(product._id); setIsGalleryModalOpen(true); }}
                     className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-xs font-bold flex items-center justify-center gap-2 hover:bg-white hover:text-black transition-all"
                   >
                     <Edit size={16} /> Edit Gallery
@@ -393,47 +408,47 @@ export default function StoreCustomizer() {
 
         {/* Category section as before */}
         {activeSection === "categories" && (
-           <div className="space-y-8">
-             <div className="flex justify-between items-center">
-               <h2 className="text-xl font-bold">Category Architecture & Icons</h2>
-               <button onClick={() => setIsCatModalOpen(true)} className="text-[13px] bg-white text-black px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2">
-                 <Plus size={16} /> Update Icons
-               </button>
-             </div>
-             <div className="grid grid-cols-1 gap-6">
-               {FULL_CATEGORIES.map((staticCat) => {
-                 const dbCat = dbCategories.find(c => c.mainCategoryName === staticCat.name);
-                 return (
-                   <div key={staticCat.id} className="bg-[#0a0a0a] border border-white/5 p-8 rounded-[2rem] hover:border-white/10 transition-all">
-                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
-                       <div className="flex items-center gap-5">
-                         <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 overflow-hidden">
-                           {dbCat?.mainIcon ? <img src={dbCat.mainIcon} className="w-full h-full object-cover" /> : staticCat.icon}
-                         </div>
-                         <div>
-                           <h3 className="text-xl font-bold">{staticCat.name}</h3>
-                           <p className="text-zinc-500 text-[14px]">Main Category Identity</p>
-                         </div>
-                       </div>
-                     </div>
-                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-                       {staticCat.subs.map((subName, idx) => {
-                         const dbSub = dbCat?.subCategories?.find((s: any) => s.name === subName);
-                         return (
-                           <div key={idx} className="p-4 bg-black/40 border border-white/5 rounded-2xl flex flex-col items-center gap-3 group hover:border-white/20 transition-all">
-                              <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center overflow-hidden border border-white/5">
-                                 {dbSub?.icon ? <img src={dbSub.icon} className="w-full h-full object-cover" /> : <Layout size={18} className="text-zinc-500" />}
-                              </div>
-                              <span className="text-[13px] font-bold text-zinc-400 group-hover:text-white text-center">{subName}</span>
-                           </div>
-                         );
-                       })}
-                     </div>
-                   </div>
-                 );
-               })}
-             </div>
-           </div>
+          <div className="space-y-8">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-bold">Category Architecture & Icons</h2>
+              <button onClick={() => setIsCatModalOpen(true)} className="text-[13px] bg-white text-black px-6 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2">
+                <Plus size={16} /> Update Icons
+              </button>
+            </div>
+            <div className="grid grid-cols-1 gap-6">
+              {FULL_CATEGORIES.map((staticCat) => {
+                const dbCat = dbCategories.find(c => c.mainCategoryName === staticCat.name);
+                return (
+                  <div key={staticCat.id} className="bg-[#0a0a0a] border border-white/5 p-8 rounded-[2rem] hover:border-white/10 transition-all">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                      <div className="flex items-center gap-5">
+                        <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-white border border-white/10 overflow-hidden">
+                          {dbCat?.mainIcon ? <img src={dbCat.mainIcon} className="w-full h-full object-cover" /> : staticCat.icon}
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold">{staticCat.name}</h3>
+                          <p className="text-zinc-500 text-[14px]">Main Category Identity</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                      {staticCat.subs.map((subName, idx) => {
+                        const dbSub = dbCat?.subCategories?.find((s: any) => s.name === subName);
+                        return (
+                          <div key={idx} className="p-4 bg-black/40 border border-white/5 rounded-2xl flex flex-col items-center gap-3 group hover:border-white/20 transition-all">
+                            <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center overflow-hidden border border-white/5">
+                              {dbSub?.icon ? <img src={dbSub.icon} className="w-full h-full object-cover" /> : <Layout size={18} className="text-zinc-500" />}
+                            </div>
+                            <span className="text-[13px] font-bold text-zinc-400 group-hover:text-white text-center">{subName}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         {/* Popup section as before */}
@@ -474,13 +489,13 @@ export default function StoreCustomizer() {
               </div>
               <div className="space-y-4">
                 <label className="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer hover:bg-white/5 transition-all">
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => setNewSlider({...newSlider, file: e.target.files?.[0] || null})} />
+                  <input type="file" className="hidden" accept="image/*" onChange={(e) => setNewSlider({ ...newSlider, file: e.target.files?.[0] || null })} />
                   {newSlider.file ? <CheckCircle className="text-emerald-500" /> : <UploadIcon className="text-zinc-500" />}
                   <span className="text-sm text-zinc-400">{newSlider.file ? newSlider.file.name : "Select Banner Image"}</span>
                 </label>
                 <div className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                   <Type size={18} className="text-zinc-500" />
-                  <input type="text" placeholder="Redirect Link" className="bg-transparent outline-none w-full text-sm" value={newSlider.link} onChange={(e) => setNewSlider({...newSlider, link: e.target.value})} />
+                  <input type="text" placeholder="Redirect Link" className="bg-transparent outline-none w-full text-sm" value={newSlider.link} onChange={(e) => setNewSlider({ ...newSlider, link: e.target.value })} />
                 </div>
               </div>
               <button onClick={handleAddSlider} disabled={isLoading} className="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
@@ -499,7 +514,7 @@ export default function StoreCustomizer() {
                 <button onClick={() => setIsCatModalOpen(false)} className="text-zinc-500 hover:text-white"><X /></button>
               </div>
               <div className="space-y-4">
-                <select className="w-full bg-black border border-white/10 p-4 rounded-2xl outline-none text-sm text-white appearance-none cursor-pointer" value={selectedMainName} onChange={(e) => {setSelectedMainName(e.target.value); setSelectedSubName("");}}>
+                <select className="w-full bg-black border border-white/10 p-4 rounded-2xl outline-none text-sm text-white appearance-none cursor-pointer" value={selectedMainName} onChange={(e) => { setSelectedMainName(e.target.value); setSelectedSubName(""); }}>
                   <option value="">Select Main Category</option>
                   {FULL_CATEGORIES.map(c => <option key={c.name} value={c.name}>{c.name}</option>)}
                 </select>
@@ -530,13 +545,13 @@ export default function StoreCustomizer() {
               </div>
               <div className="space-y-4">
                 <label className="border-2 border-dashed border-white/10 rounded-2xl p-8 flex flex-col items-center gap-3 cursor-pointer hover:bg-white/5 transition-all">
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => setNewPopup({...newPopup, file: e.target.files?.[0] || null})} />
+                  <input type="file" className="hidden" accept="image/*" onChange={(e) => setNewPopup({ ...newPopup, file: e.target.files?.[0] || null })} />
                   {newPopup.file ? <CheckCircle className="text-emerald-500" /> : <UploadIcon className="text-zinc-500" />}
                   <span className="text-sm text-zinc-400">{newPopup.file ? newPopup.file.name : "Select Popup Image"}</span>
                 </label>
                 <div className="flex items-center gap-3 bg-white/5 p-4 rounded-2xl border border-white/5">
                   <Type size={18} className="text-zinc-500" />
-                  <input type="text" placeholder="Redirect Link" className="bg-transparent outline-none w-full text-sm" value={newPopup.link} onChange={(e) => setNewPopup({...newPopup, link: e.target.value})} />
+                  <input type="text" placeholder="Redirect Link" className="bg-transparent outline-none w-full text-sm" value={newPopup.link} onChange={(e) => setNewPopup({ ...newPopup, link: e.target.value })} />
                 </div>
               </div>
               <button onClick={handleUpdatePopup} disabled={popupLoading} className="w-full bg-white text-black py-4 rounded-2xl font-bold flex items-center justify-center gap-2">
