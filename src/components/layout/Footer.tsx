@@ -17,15 +17,15 @@ const footerTranslations = {
     },
     navigation: {
       products: [
-        { name: "Smartphone", href: "/category/smartphone" },
-        { name: "Wearable", href: "/category/wearable" },
-        { name: "Tablet", href: "/category/tablet" },
-        { name: "Audio", href: "/category/audio" },
+        { name: "Smartphone", href: "/smartphone" },
+        { name: "Wearable", href: "/wearable" },
+        { name: "Tablet", href: "/tablet" },
+        { name: "Audio", href: "/audio" },
       ],
       store: [
         { name: "Terms and Conditions of Sale", href: "/terms" },
-        { name: "Privacy Policy", href: "/privacy" },
-        { name: "Return Policy", href: "/returns" },
+        { name: "Delivery Policy", href: "/privacy" },
+        { name: "Return Policy", href: "/return" },
         { name: "FAQ", href: "/faq" },
       ],
       social: [
@@ -52,15 +52,15 @@ const footerTranslations = {
     },
     navigation: {
       products: [
-        { name: "الهواتف الذكية", href: "/category/smartphone" },
-        { name: "الأجهزة القابلة للارتداء", href: "/category/wearable" },
-        { name: "الأجهزة اللوحية", href: "/category/tablet" },
-        { name: "الصوتيات", href: "/category/audio" },
+        { name: "الهواتف الذكية", href: "/smartphone" },
+        { name: "الأجهزة القابلة للارتداء", href: "/wearable" },
+        { name: "الأجهزة اللوحية", href: "/tablet" },
+        { name: "الصوتيات", href: "/audio" },
       ],
       store: [
         { name: "شروط وأحكام البيع", href: "/terms" },
-        { name: "سياسة الخصوصية", href: "/privacy" },
-        { name: "سياسة الإرجاع", href: "/returns" },
+        { name: "سياسة التوصيل", href: "/privacy" },
+        { name: "سياسة الإرجاع", href: "/return" },
         { name: "الأسئلة الشائعة", href: "/faq" },
       ],
       social: [
@@ -98,7 +98,7 @@ export default function Footer() {
         </div>
 
         {/* Navigation Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-12 mb-20">
           
           {/* 01. Products */}
           <div className="space-y-6">
@@ -149,18 +149,7 @@ export default function Footer() {
           </div>
 
           {/* 04. Cards Supported */}
-          <div className="space-y-6">
-            <h4 className={`text-[14px] font-bold uppercase text-black tracking-tight ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-              {t.sections.cards}
-            </h4>
-            <ul className={`flex flex-col gap-3 text-[13px] text-gray-400 ${lang === 'ar' ? 'items-start' : 'items-start'}`}>
-              {t.navigation.cards.map((card) => (
-                <li key={card.name} className="cursor-default select-none">
-                  {card.name}
-                </li>
-              ))}
-            </ul>
-          </div>
+          
 
         </div>
         

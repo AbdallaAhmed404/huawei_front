@@ -1,194 +1,174 @@
 "use client";
+import React, { useState } from 'react';
+import { useLang } from '../context/LanguageContext'; 
+import { ChevronRight, ChevronLeft, ShieldCheck, HelpCircle, FileText, Globe, ChevronDown, ShoppingBag, Truck, RefreshCcw, Package } from 'lucide-react';
+import Link from 'next/link';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
-import { Plus, Minus, ArrowLeft, ArrowUpRight } from "lucide-react";
-import Link from "next/link";
-
-const faqs = [
-  {
-    id: "01",
-    category: "ENGINEERING",
-    question: "What defines a 'High-End Web Solution'?",
-    answer: "Unlike standard templates, our solutions are bespoke architectural builds. We prioritize Edge Runtime performance, structural SEO integrity, and high-fidelity UI engineering to ensure your digital presence is a permanent asset."
-  },
-  {
-    id: "02",
-    category: "INFRASTRUCTURE",
-    question: "Why does Scarabix utilize Edge Runtime?",
-    answer: "Speed is a pillar of legacy. By distributing your site across a global network of edge nodes, we eliminate latency and ensure near-instant load times for users regardless of their physical location."
-  },
-  {
-    id: "03",
-    category: "PROTOCOL",
-    question: "How long does a typical project take?",
-    answer: "Precision takes time. A standard architectural build typically spans 4 to 8 weeks, covering conceptual blueprints, technical engineering, and final stress-testing before deployment."
-  },
-  {
-    id: "04",
-    category: "LEGACY",
-    question: "Does the Agency provide maintenance?",
-    answer: "We build for permanence. Every project includes a structural handover. To ensure long-term stability and scaling, we offer three specialized maintenance tiers: Foundation, Evolution, and Legacy.",
-    hasLink: true
-  },
-];
+const translations = {
+    en: {
+        title: "Frequently Asked Questions (FAQ)",
+        lastUpdated: "Last Updated: May 2026",
+        back: "Back to Home",
+        print: "Print Version",
+        officialStore: "Huawei Official Store Oman",
+        securePlatform: "24/7 Support Center",
+        questions: [
+            {
+                id: "1",
+                icon: <ShoppingBag size={20} />,
+                question: "Can I make a purchase via hotline, live chat, or email?",
+                answer: "No, we only accept orders placed directly through our official website (huaweioman.com) to ensure the security of your transactions."
+            },
+            {
+                id: "2",
+                icon: <Package size={20} />,
+                question: "How can I check the availability of an item?",
+                answer: "If an item is in stock, the 'Add to Cart' button will be visible and active. If an item is out of stock, the button will be disabled or hidden."
+            },
+            {
+                id: "3",
+                icon: <HelpCircle size={20} />,
+                question: "How can I track my order list?",
+                answer: "When using a Huawei account: Log in to your personal account and click on 'Track Order' to see the real-time status of your shipments."
+            },
+            {
+                id: "4",
+                icon: <FileText size={20} />,
+                question: "Can I modify order information (recipient, address, etc.) after dispatch?",
+                answer: "No, order information cannot be modified once the shipment has been dispatched from our warehouse."
+            },
+            {
+                id: "5",
+                icon: <Truck size={20} />,
+                question: "When will my order be shipped?",
+                answer: "In general, if items are in stock, they will be shipped within two (2) business days after the order is placed. We will notify you if any items are temporarily out of stock or if more time is needed for delivery."
+            },
+            {
+                id: "6",
+                icon: <RefreshCcw size={20} />,
+                question: "What is the return period for undamaged products?",
+                answer: "You have seven (7) days to notify us of your desire to return a product, provided that the product has not been opened and the packaging is in its original condition."
+            }
+        ]
+    },
+    ar: {
+        title: "الأسئلة الشائعة",
+        lastUpdated: "آخر تحديث: مايو 2026",
+        back: "العودة للرئيسية",
+        print: "طباعة نسخة",
+        officialStore: "متجر هواوي الرسمي - عُمان",
+        securePlatform: "مركز الدعم والمساعدة",
+        questions: [
+            {
+                id: "1",
+                icon: <ShoppingBag size={20} />,
+                question: "هل يمكنني إجراء عملية شراء من خلال الخط الساخن، أو الدردشة المباشرة، أو عبر البريد الإلكتروني؟",
+                answer: "لا، فنحن لا نقبل سوى الطلبات المقدمة عبر موقع الويب الرسمي لضمان أمان وسلامة معاملاتكم."
+            },
+            {
+                id: "2",
+                icon: <Package size={20} />,
+                question: "كيف يمكنني معرفة مدى توفر أحد العناصر في المخزون؟",
+                answer: "في حال وجود أحد العناصر في المخزون، فسوف يتوفر الزر 'إضافة إلى عربة التسوق'. وفي حال نفاد مخزون أحد العناصر لن يتوفر الزر."
+            },
+            {
+                id: "3",
+                icon: <HelpCircle size={20} />,
+                question: "كيف يمكنني تتبع لائحة الطلبات؟",
+                answer: "عند استخدام حساب هواوي: قم بتسجيل الدخول إلى الحساب الشخصي وانقر فوق 'تتبع الطلب' لمتابعة حالة شحناتك."
+            },
+            {
+                id: "4",
+                icon: <FileText size={20} />,
+                question: "هل يمكنني تعديل معلومات الطلب (المستلم، العنوان، وما إلى ذلك) بعد الإرسال؟",
+                answer: "لا، لا يمكنك تعديل معلومات الطلب بعد إرساله من المستودع."
+            },
+            {
+                id: "5",
+                icon: <Truck size={20} />,
+                question: "متى سيتم شحن لائحة الطلبات؟",
+                answer: "بشكلٍ عام، إذا كانت العناصر متوفرة في المخزون، فسيتم شحنها خلال يومَي (2) عمل بعد إجراء الطلب. وسوف نخبرك في حالة نفاد أي من العناصر مؤقتًا أو الحاجة إلى مزيد من الوقت للتوصيل."
+            },
+            {
+                id: "6",
+                icon: <RefreshCcw size={20} />,
+                question: "كم تبلغ مدة إرجاع (سحب) المنتجات غير التالفة؟",
+                answer: "يتوفر لديك سبعة (7) أيام لإخطارنا برغبتك في إرجاع المنتج شريطة عدم فتح ذلك المنتج وأن يكون التغليف على حالته الأصلية."
+            }
+        ]
+    }
+};
 
 export default function FAQPage() {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+    const { lang } = useLang();
+    const t = translations[lang];
+    const isRtl = lang === 'ar';
+    const [openId, setOpenId] = useState<string | null>("1");
 
-  return (
-    <main className="min-h-screen bg-[#F0EDE8] dark:bg-[#0A0A0A] text-black dark:text-white transition-colors duration-300 pt-32 pb-24 selection:bg-scarab-gold selection:text-black font-seed">
-      <div className="max-w-4xl mx-auto px-6">
-
-        {/* MINIMAL NAVIGATION */}
-        <nav className="mb-24">
-          <Link
-            href="/"
-            className="group inline-flex items-center gap-4 transition-all"
-          >
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-black/10 dark:border-white/10 flex items-center justify-center group-hover:border-scarab-gold group-hover:bg-scarab-gold transition-all duration-300">
-              <ArrowLeft
-                size={18}
-                strokeWidth={2.5}
-                className="text-black/70 dark:text-white/70 group-hover:text-black transition-colors"
-              />
-            </div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.4em] opacity-30 group-hover:opacity-100 dark:group-hover:text-scarab-gold transition-opacity">
-              Return to Node
-            </span>
-          </Link>
-        </nav>
-
-        {/* CENTERED HEADER */}
-        <div className="text-center mb-32 space-y-6">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-6xl md:text-8xl font-black uppercase tracking-tighter italic leading-none"
-          >
-            FA<span className="text-scarab-gold">Q</span>s
-          </motion.h1>
-          <motion.div
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="h-px w-12 bg-black/10 dark:bg-white/10 mx-auto"
-          />
-        </div>
-
-        {/* ADAPTIVE ACCORDION */}
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <motion.div
-              key={faq.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="border-b border-black/5 dark:border-white/5 last:border-0 transition-colors duration-300"
-            >
-              <button
-                onClick={() => setActiveIdx(activeIdx === index ? null : index)}
-                className="w-full py-10 flex items-start justify-between text-left group outline-none"
-              >
-                <div className="flex gap-8 md:gap-16 items-start">
-                  <span className="text-[10px] font-mono pt-1.5 opacity-20 group-hover:opacity-100 transition-opacity">
-                    {faq.id}
-                  </span>
-                  <div className="space-y-2">
-                    <span className="text-[9px] font-bold tracking-widest text-scarab-gold uppercase">
-                      {faq.category}
-                    </span>
-                    <h3 className={`text-xl md:text-3xl font-bold uppercase tracking-tight transition-all duration-300 ${activeIdx === index
-                      ? "text-black dark:text-white"
-                      : "text-black/30 dark:text-white/20 group-hover:text-black/60 dark:group-hover:text-white/60"
-                      }`}>
-                      {faq.question}
-                    </h3>
-                  </div>
-                </div>
-
-                <div className="pt-1.5 shrink-0">
-                  <div className="relative w-5 h-5 flex items-center justify-center">
-                    <Plus
-                      size={20}
-                      className={`absolute transition-all duration-300 ease-[0.16,1,0.3,1] ${activeIdx === index ? "rotate-90 opacity-0" : "opacity-20 group-hover:opacity-100"}`}
-                      strokeWidth={1.5}
-                    />
-                    <Minus
-                      size={20}
-                      className={`absolute transition-all duration-300 ease-[0.16,1,0.3,1] ${activeIdx === index ? "opacity-40" : "rotate-90 opacity-0"}`}
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                </div>
-              </button>
-
-              <AnimatePresence>
-                {activeIdx === index && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pl-[58px] md:pl-[90px] pb-12 max-w-2xl">
-                      <p className="text-black/50 dark:text-white/40 text-base md:text-lg leading-relaxed italic transition-colors duration-300">
-                        {faq.answer}
-                      </p>
-
-                      {faq.hasLink && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="mt-10"
-                        >
-                          {/* OUTLINED BUTTON VARIANT */}
-                          <Link
-                            href="/packages"
-                            className="group/btn inline-flex items-center justify-between gap-8 px-8 py-5 border-2 border-black/10 dark:border-white/10 rounded-full hover:border-scarab-gold transition-all duration-500 active:scale-95"
-                          >
-                            <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-black/60 dark:text-white/60 group-hover:text-black dark:group-hover:text-white transition-colors">
-                              Explore Packages
-                            </span>
-                            <div className="w-8 h-8 rounded-full border-2 border-black/10 dark:border-white/10 flex items-center justify-center group-hover/btn:bg-scarab-gold group-hover/btn:border-scarab-gold group-hover/btn:text-black transition-all duration-500 group-hover/btn:rotate-45">
-                              <ArrowUpRight size={16} strokeWidth={3} />
-                            </div>
-                          </Link>
-                        </motion.div>
-                      )}
+    return (
+        <main className={`min-h-screen bg-white py-20 px-6 font-sans ${isRtl ? 'rtl' : 'ltr'}`} dir={isRtl ? 'rtl' : 'ltr'}>
+            <div className="max-w-[900px] mx-auto">
+                
+                {/* Header Section */}
+                <div className="mb-12 border-b border-gray-100 pb-8 text-center md:text-start">
+                    
+                    <h1 className="text-3xl md:text-5xl font-bold text-black mb-4 tracking-tight">
+                        {t.title}
+                    </h1>
+                    <div className="flex items-center justify-center md:justify-start gap-4 text-gray-400 text-sm">
+                        <span className="bg-gray-50 px-3 py-1 rounded-full">{t.lastUpdated}</span>
+                        <div className="flex items-center gap-1">
+                            <Globe size={14} />
+                            <span>Support Oman</span>
+                        </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
+                </div>
 
-        {/* SOLID PRIMARY CTA (FOOTER) */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          className="mt-40 pt-20 border-t border-black/5 dark:border-white/5 text-center space-y-10"
-        >
-          <p className="text-[11px] font-bold uppercase tracking-[0.4em] opacity-80 transition-colors duration-300">
-            Unresolved Technical Query?
-          </p>
-          <Link
-            href="/contact"
-            className="group inline-flex items-center justify-between gap-8 bg-black dark:bg-white text-white dark:text-black px-10 py-6 rounded-full hover:bg-scarab-gold dark:hover:bg-scarab-gold hover:text-black transition-all duration-500 active:scale-95 shadow-2xl shadow-black/10"
-          >
-            <span className="text-[11px] font-bold uppercase tracking-[0.3em]">
-              Ask your question
-            </span>
-            <div className="w-10 h-10 rounded-full border border-white/20 dark:border-black/20 flex items-center justify-center group-hover:rotate-45 transition-transform duration-500">
-              <ArrowUpRight size={20} strokeWidth={3} />
+                {/* FAQ Items */}
+                <div className="space-y-4">
+                    {t.questions.map((item) => (
+                        <div 
+                            key={item.id} 
+                            className={`border rounded-[20px] transition-all duration-300 ${openId === item.id ? 'border-[#CF1322] bg-red-50/10 shadow-sm' : 'border-gray-100 hover:border-gray-300'}`}
+                        >
+                            <button 
+                                onClick={() => setOpenId(openId === item.id ? null : item.id)}
+                                className="w-full flex items-center justify-between p-6 text-start"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className={`p-2 rounded-xl transition-colors ${openId === item.id ? 'bg-[#CF1322] text-white' : 'bg-gray-50 text-gray-400'}`}>
+                                        {item.icon}
+                                    </div>
+                                    <span className={`text-base md:text-lg font-bold transition-colors ${openId === item.id ? 'text-black' : 'text-gray-700'}`}>
+                                        {item.question}
+                                    </span>
+                                </div>
+                                <ChevronDown 
+                                    size={20} 
+                                    className={`text-gray-400 transition-transform duration-300 ${openId === item.id ? 'rotate-180 text-[#CF1322]' : ''}`} 
+                                />
+                            </button>
+                            
+                            <div className={`overflow-hidden transition-all duration-300 ${openId === item.id ? 'max-h-[300px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className="px-6 pb-6 pt-0">
+                                    <div className="h-[1px] bg-gray-100 mb-4 w-full" />
+                                    <p className="text-gray-600 leading-relaxed text-[16px] md:text-[17px] ps-12">
+                                        {item.answer}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+               
             </div>
-          </Link>
-        </motion.div>
-      </div>
-    </main>
-  );
+
+            <style jsx global>{`
+                .rtl { font-family: 'Tajawal', sans-serif; }
+                .ltr { font-family: 'Inter', sans-serif; }
+                p { text-align: justify; }
+            `}</style>
+        </main>
+    );
 }
