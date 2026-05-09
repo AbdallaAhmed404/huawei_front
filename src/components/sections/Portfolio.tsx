@@ -118,7 +118,7 @@ export default function Portfolio() {
   if (loading) return <div className="min-h-screen flex items-center justify-center font-bold text-zinc-400">{t.loading}</div>;
 
   return (
-    <section className="relative w-full bg-[#f9f9f9] rounded-t-[30px] md:rounded-t-[60px] pb-24">
+    <section className="relative w-full bg-[#f9f9f9] rounded-t-[30px] md:rounded-t-[60px] pb-24 overflow-hidden">
       <div className="container mx-auto px-4 md:px-12 max-w-[1440px] pt-10">
 
         {/* 1. الترحيب والكاتيجوري الأساسي */}

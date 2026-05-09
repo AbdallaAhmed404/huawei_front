@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Search, ShoppingBag, X, Menu, User, Languages } from "lucide-react"; 
+import { Search, ShoppingBag, X, Menu, User, Languages } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useCart } from "../../../app/(main)/context/CartContext"; 
+import { useCart } from "../../../app/(main)/context/CartContext";
 import { useAuth } from "../../../app/(main)/context/AuthContext";
 import { useLang } from "../../../app/(main)/context/LanguageContext";
 
@@ -49,16 +49,16 @@ const translations = {
 export default function Navbar() {
   const { lang, toggleLang } = useLang();
   const t = translations[lang]; // اختيار نصوص اللغة الحالية
-  
+
   const [mounted, setMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  
+
   const { cart } = useCart();
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
@@ -91,7 +91,7 @@ export default function Navbar() {
     } else {
       const filtered = products.filter((p) =>
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5); 
+      ).slice(0, 5);
       setFilteredProducts(filtered);
     }
   }, [searchQuery, products]);
@@ -132,16 +132,16 @@ export default function Navbar() {
         <div className="flex items-center gap-4 md:gap-6 text-black">
           {/* زر تبديل اللغة */}
           {/* زر تبديل اللغة باستخدام الأيقونة */}
-<button 
-  onClick={toggleLang}
-  className="flex items-center gap-1 p-2 hover:text-gray-600 transition-colors outline-none"
-  title={lang === 'en' ? 'تغيير اللغة للعربية' : 'Switch to English'}
->
-  <Languages size={20} strokeWidth={2} />
-  <span className="text-[10px] font-bold uppercase">
-    {lang === 'en' ? 'Ar' : 'En'}
-  </span>
-</button>
+          <button
+            onClick={toggleLang}
+            className="hidden lg:flex items-center gap-1 p-2 hover:text-gray-600 transition-colors outline-none"
+            title={lang === 'en' ? 'تغيير اللغة للعربية' : 'Switch to English'}
+          >
+            <Languages size={20} strokeWidth={2} />
+            <span className="text-[10px] font-bold uppercase">
+              {lang === 'en' ? 'Ar' : 'En'}
+            </span>
+          </button>
 
           <Link href="/cart" className="relative group p-2">
             <button className="cursor-pointer outline-none transition-colors">
@@ -154,22 +154,22 @@ export default function Navbar() {
             )}
           </Link>
 
-          <button 
+          <button
             onClick={() => { setIsSearchOpen(!isSearchOpen); setIsMenuOpen(false); setIsAccountOpen(false); }}
             className="transition-colors p-2 cursor-pointer outline-none"
           >
             {isSearchOpen ? <X size={20} strokeWidth={2.5} /> : <Search size={20} strokeWidth={2.5} />}
           </button>
 
-          <button 
+          <button
             onClick={() => { setIsMenuOpen(!isMenuOpen); setIsSearchOpen(false); setIsAccountOpen(false); }}
             className="lg:hidden transition-colors p-2 cursor-pointer outline-none"
           >
             {isMenuOpen ? <X size={20} strokeWidth={2.5} /> : <Menu size={20} strokeWidth={2.5} />}
           </button>
 
-          <div className="relative">
-            <button 
+          <div className="relative hidden lg:block">
+            <button
               onClick={() => { setIsAccountOpen(!isAccountOpen); setIsSearchOpen(false); setIsMenuOpen(false); }}
               className="p-2 cursor-pointer outline-none hover:text-gray-600 transition-colors"
             >
@@ -179,15 +179,13 @@ export default function Navbar() {
             {isAccountOpen && (
               <div className={`absolute top-[45px] ${lang === 'ar' ? 'left-0' : 'right-0'} bg-white shadow-xl rounded-lg py-4 w-[180px] z-[120] border border-gray-100 animate-in fade-in zoom-in-95 duration-200`}>
                 <div className="flex flex-col">
-                  <Link href="/profile" onClick={() => setIsAccountOpen(false)} className={`px-6 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-50 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
-                    {t.account}
-                  </Link>
+                  
                   <Link href="/orders" onClick={() => setIsAccountOpen(false)} className={`px-6 py-3 text-[14px] font-medium text-gray-700 hover:bg-gray-50 border-b border-gray-50 ${lang === 'ar' ? 'text-right' : 'text-left'}`}>
                     {t.trackOrder}
                   </Link>
-                  
+
                   {isAuthenticated ? (
-                    <button 
+                    <button
                       onClick={handleLogout}
                       className={`px-6 py-3 text-[14px] font-bold text-[#CF1322] hover:bg-gray-50 ${lang === 'ar' ? 'text-right' : 'text-left'}`}
                     >
@@ -216,10 +214,38 @@ export default function Navbar() {
                   {link.name}
                 </Link>
               ))}
+              <div className="w-full h-[1px] bg-gray-100 my-2"></div>
+
+              {/* خيارات الحساب داخل المنيو */}
+             
+              <Link href="/orders" onClick={() => setIsMenuOpen(false)} className="text-[16px] font-medium text-gray-700">
+                {t.trackOrder}
+              </Link>
+
+              {isAuthenticated ? (
+                <button onClick={handleLogout} className="text-[16px] font-bold text-[#CF1322]">
+                  {t.logout}
+                </button>
+              ) : (
+                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="text-[16px] font-bold text-blue-500">
+                  {t.login}
+                </Link>
+              )}
+
+              <div className="w-full h-[1px] bg-gray-100 my-2"></div>
+
+              {/* زر تبديل اللغة داخل المنيو */}
+              <button
+                onClick={() => { toggleLang(); setIsMenuOpen(false); }}
+                className="flex items-center gap-2 text-[16px] font-bold text-gray-700"
+              >
+                <Languages size={20} />
+                {lang === 'en' ? 'العربية' : 'English'}
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      </div> بيطلع برا الحدود حل المشكلة دي فقط
 
       {/* Search Overlay */}
       <div className={`fixed inset-0 z-[100] transition-all duration-500 ${isSearchOpen ? "visible" : "invisible"}`}>
@@ -228,7 +254,7 @@ export default function Navbar() {
           <div className="max-w-[1100px] mx-auto pt-16 px-6 relative h-full flex flex-col">
             <div className={`flex items-center gap-4 border-b border-zinc-300 pb-4 ${lang === 'ar' ? 'flex-row-reverse' : 'flex-row'}`}>
               <Search size={23} className="text-zinc-400" />
-              <input 
+              <input
                 type="text"
                 placeholder={t.searchPlaceholder}
                 className={`w-full bg-transparent text-[18px] font-light outline-none text-black placeholder:text-zinc-300 ${lang === 'ar' ? 'text-right' : 'text-left'}`}

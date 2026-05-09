@@ -8,10 +8,12 @@ import { cn } from "@/lib/utils";
 import { useLang } from "./context/LanguageContext";
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { usePathname } from "next/navigation";
 
 export default function ClientLayoutContent({ children }: { children: React.ReactNode }) {
   const { lang } = useLang(); // الحصول على اللغة الحالية من السياق
-  
+  const pathname = usePathname();
+  const isHomePage = pathname === "/" || pathname === "/ar" || pathname === "/en";
   return (
     <div 
       dir={lang === 'ar' ? 'rtl' : 'ltr'} // تغيير اتجاه الموقع فورياً
@@ -26,7 +28,7 @@ export default function ClientLayoutContent({ children }: { children: React.Reac
           <main className="flex-1 relative">
             {children}
           </main>
-          <FooterRegistry />
+          {!isHomePage && <FooterRegistry />}
           <WhatsAppButton />
         </CartProvider>
       </AuthProvider>
