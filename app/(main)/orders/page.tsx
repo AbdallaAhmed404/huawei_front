@@ -128,7 +128,7 @@ export default function MyOrdersPage() {
                                             <p className="text-sm text-gray-600 font-medium">{formatDate(order.createdAt)}</p>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="flex items-center gap-3">
                                         <span className={`px-4 py-1.5 rounded-full text-xs font-bold ${getStatusStyle(order.status)}`}>
                                             {order.status}
@@ -155,8 +155,16 @@ export default function MyOrdersPage() {
                                                 </div>
                                                 <div className="text-right">
                                                     <div className="flex items-center gap-1">
-                                                        <span className="text-sm font-bold text-gray-900">{item.price.toLocaleString()}</span>
-                                                        <span className="text-[10px] font-bold text-gray-400">OMR</span>
+                                                       
+                                                        <div className="relative w-3 h-3 flex-shrink-0">
+                                                            <Image
+                                                                src="/oman-riyal.svg"
+                                                                alt="OMR"
+                                                                fill
+                                                                className="object-contain"
+                                                            />
+                                                        </div>
+                                                         <span className="text-sm font-bold text-gray-900">{item.price.toLocaleString()}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -170,8 +178,16 @@ export default function MyOrdersPage() {
                                         {lang === 'ar' ? 'إجمالي الطلب' : 'Order Total'}
                                     </p>
                                     <div className="flex items-center gap-2">
+                                        
+                                        <div className="relative w-3 h-3 flex-shrink-0">
+                                            <Image
+                                                src="/oman-riyal.svg"
+                                                alt="OMR"
+                                                fill
+                                                className="object-contain"
+                                            />
+                                        </div>
                                         <span className="text-xl font-black text-[#CF1322]">{order.total.toLocaleString()}</span>
-                                        <span className="text-xs font-bold text-gray-400">OMR</span>
                                     </div>
                                 </div>
                             </div>
