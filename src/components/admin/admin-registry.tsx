@@ -85,7 +85,7 @@ export default function ProductRegistry() {
       message: "Are you sure you want to delete this asset? This action cannot be undone.",
       onConfirm: async () => {
         try {
-          await axios.delete(`https://api.huaweioman.com/admin/delete/${id}`);
+          await axios.delete(`https://api.huaweioman.com/admin/deletepro/${id}`);
           fetchProducts();
         } catch (err) {
           setPopup({ show: true, type: 'info', message: "Delete failed. Please try again." });
