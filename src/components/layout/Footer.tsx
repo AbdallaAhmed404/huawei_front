@@ -152,7 +152,21 @@ export default function Footer() {
           
 
         </div>
-        
+        <div 
+          dir="ltr"
+          className="pt-10 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-dashed border-midnight/10 dark:border-white/10 w-full"
+        >
+          {/* AGENCY SIGNATURE */}
+          <div className="flex items-center gap-1 opacity-40 hover:opacity-100 transition-all duration-500">
+            <span className="text-[7px] font-black uppercase tracking-[0.4em] text-foreground/60 whitespace-nowrap pt-1">
+              Powered by scarabix
+            </span>
+            {/* المحافظة على المقاسات المطلوبة بالملي */}
+            <div className="relative scale-75 md:scale-100">
+              
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

@@ -81,6 +81,7 @@ interface Product {
 }
 
 export default function ProductPurchasePage() {
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const { lang } = useLang();
     const t = translations[lang];
     const router = useRouter();
@@ -217,7 +218,45 @@ export default function ProductPurchasePage() {
             <div className="max-w-[1400px] mx-auto px-6 md:px-12">
                 <div className="flex flex-col lg:flex-row gap-16">
 
-                    {/* 1. الجانب الأيسر: معرض الصور المطور */}
+                    {/* <div className="w-full lg:w-[60%] lg:sticky lg:top-24 h-full group">
+                        <div className="rounded-[15px] overflow-hidden relative flex items-center justify-center p-8 h-full min-h-[500px] bg-white">
+
+                            {currentImages.length > 1 && (
+                                <button
+                                    onClick={prevImage}
+                                    className="absolute left-4 z-10 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                >
+                                    <ChevronLeft size={24} className="text-black" />
+                                </button>
+                            )}
+
+                            <img
+                                src={currentImages[currentImageIndex]}
+                                alt={product.name}
+                                className="w-full h-full object-contain max-h-[70vh] transition-all duration-500"
+                            />
+
+                            {currentImages.length > 1 && (
+                                <button
+                                    onClick={nextImage}
+                                    className="absolute right-4 z-10 p-2 rounded-full bg-white/80 shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-white"
+                                >
+                                    <ChevronRight size={24} className="text-black" />
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="flex justify-center gap-2 mt-6">
+                            {currentImages.map((_, i: number) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setCurrentImageIndex(i)}
+                                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === currentImageIndex ? 'bg-black w-4' : 'bg-gray-300'}`}
+                                />
+                            ))}
+                        </div>
+                    </div> */}
+
                     <div className="w-full lg:w-[60%] lg:sticky lg:top-24 h-full group">
                         <div className="rounded-[15px] overflow-hidden relative flex items-center bg-white min-h-[500px]">
 
@@ -445,28 +484,27 @@ export default function ProductPurchasePage() {
                 </div>
 
                 {/* --- إضافة قسم الجاليري (Key Features) مع عناوين مجموعات الصور --- */}
-                {gallery.length > 0 && (
+                {/* {gallery.length > 0 && (
                     <section className="mt-24 border-t border-gray-100 pt-16">
                         <div className="space-y-24">
                             {gallery.map((item, idx) => (
                                 <div key={idx} className="space-y-6">
-                                    {/* عرض عنوان المجموعة من جهة اليسار */}
                                     <div className="flex justify-start">
                                         <h3 className="text-[22px] font-bold text-black  pl-4 text-left">
                                             {item.label}
                                         </h3>
                                     </div>
-
+                                    
                                     <div className="relative group/slider w-full">
                                         <div className="overflow-hidden rounded-[20px]">
-                                            <div
+                                            <div 
                                                 className="flex transition-transform duration-500 ease-in-out gap-4"
                                                 style={{ transform: `translateX(-${gallerySlideIndices[idx] * 25}%)` }}
                                             >
                                                 {item.images.map((imgUrl, imgIdx) => (
                                                     <div key={imgIdx} className="min-w-[calc(25%-12px)] relative bg-gray-50 rounded-[15px] overflow-hidden aspect-square border border-gray-100">
-                                                        <img
-                                                            src={imgUrl}
+                                                        <img 
+                                                            src={imgUrl} 
                                                             alt={`${item.label} ${imgIdx + 1}`}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -475,16 +513,15 @@ export default function ProductPurchasePage() {
                                             </div>
                                         </div>
 
-                                        {/* أسهم التنقل للجاليري - تظهر فقط إذا كان هناك أكثر من 4 صور */}
                                         {item.images.length > 4 && (
                                             <>
-                                                <button
+                                                <button 
                                                     onClick={() => prevGallerySlide(idx)}
                                                     className="absolute -left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
                                                 >
                                                     <ChevronLeft size={24} />
                                                 </button>
-                                                <button
+                                                <button 
                                                     onClick={() => nextGallerySlide(idx)}
                                                     className="absolute -right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
                                                 >
@@ -496,6 +533,79 @@ export default function ProductPurchasePage() {
                                 </div>
                             ))}
                         </div>
+                    </section>
+                )} */}
+
+                {/* --- قسم الجاليري بنظام Grid ذكي --- */}
+                {gallery.length > 0 && (
+                    <section className="mt-24 border-t border-gray-100 pt-16">
+                        <div className="space-y-16">
+                            {gallery.map((item, idx) => (
+                                <div key={idx} className="space-y-6">
+                                    <div className="flex justify-start">
+                                        <h3 className="text-[22px] font-bold text-black pl-4 border-l-4 border-[#CF1322]">
+                                            {item.label}
+                                        </h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-[200px_200px] md:grid-rows-[300px_300px] gap-0 overflow-hidden rounded-[20px] border border-gray-200">
+                                        {item.images.map((imgUrl, imgIdx) => {
+                                            let gridSpan = "col-span-1 row-span-1";
+
+                                            if (item.images.length === 1) {
+                                                gridSpan = "col-span-4 row-span-2";
+                                            } else if (item.images.length === 2) {
+                                                gridSpan = "col-span-2 row-span-2";
+                                            } else if (imgIdx === 0) {
+                                                gridSpan = "col-span-2 row-span-2";
+                                            } else if (imgIdx === 1 && item.images.length > 2) {
+                                                gridSpan = "col-span-2 row-span-1";
+                                            }
+
+                                            return (
+                                                <div
+                                                    key={imgIdx}
+                                                    onClick={() => setSelectedImage(imgUrl)}
+                                                    className={`${gridSpan} relative group overflow-hidden border-[0.5px] border-white`}
+                                                >
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={`${item.label} ${imgIdx + 1}`}
+                                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* --- المودال (البوب أب) بخلفية Blur ومؤشر عادي --- */}
+                        {selectedImage && (
+                            <div
+                                className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 transition-all duration-300"
+                                onClick={() => setSelectedImage(null)}
+                            >
+                                {/* زر الإغلاق */}
+                                <button
+                                    className="absolute top-6 right-6 text-white text-4xl hover:text-gray-300 transition-colors z-[1000]"
+                                    onClick={() => setSelectedImage(null)}
+                                >
+                                    &times;
+                                </button>
+
+                                <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
+                                    <img
+                                        src={selectedImage}
+                                        alt="Full size"
+                                        className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in duration-300"
+                                        onClick={(e) => e.stopPropagation()}
+                                    />
+                                </div>
+                            </div>
+                        )}
                     </section>
                 )}
             </div>
