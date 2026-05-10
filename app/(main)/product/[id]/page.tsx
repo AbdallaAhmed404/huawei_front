@@ -400,24 +400,27 @@ export default function ProductPurchasePage() {
                             </div>
                         )}
 
-                        <div className="space-y-4 border-t border-gray-90 pt-5">
-                            <h4 className="text-[16px] font-bold text-black">{t.freeGift}</h4>
-                            <div className="space-y-6">
-                                {product.gifts?.map((gift: Gift, idx: number) => (
-                                    <div key={idx} className="flex items-start gap-4">
-                                        <div className="w-25 h-25 bg-gray-50 rounded-[15px] p-2">
-                                            <img src={gift.image} alt={gift.name} className="object-contain" />
+                        {/* سيتم فحص وجود الهدايا وطول المصفوفة قبل عرض أي شيء */}
+                        {product.gifts && product.gifts.length > 0 && (
+                            <div className="space-y-4 border-t border-gray-90 pt-5">
+                                <h4 className="text-[16px] font-bold text-black">{t.freeGift}</h4>
+                                <div className="space-y-6">
+                                    {product.gifts.map((gift: Gift, idx: number) => (
+                                        <div key={idx} className="flex items-start gap-4">
+                                            <div className="w-25 h-25 bg-gray-50 rounded-[15px] p-2">
+                                                <img src={gift.image} alt={gift.name} className="object-contain" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-xs font-bold leading-snug">{gift.name}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[10px] text-gray-500">{t.Qty}: 1</p>
+                                            </div>
                                         </div>
-                                        <div className="flex-1">
-                                            <p className="text-xs font-bold leading-snug">{gift.name}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-[10px] text-gray-500">{t.Qty}: 1</p>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
 
                         <div className="sticky bottom-0 bg-white/90 backdrop-blur-md pt-8 pb-4 border-t border-gray-100 flex flex-col gap-4">
                             <div className="flex justify-between items-end">
