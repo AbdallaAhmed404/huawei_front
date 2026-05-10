@@ -112,7 +112,7 @@ export default function FAQPage() {
                 {/* Header Section */}
                 <div className="mb-12 border-b border-gray-100 pb-8 text-center md:text-start">
                     
-                    <h1 className="text-3xl md:text-5xl font-bold text-black mb-4 tracking-tight">
+                    <h1 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
                         {t.title}
                     </h1>
                     <div className="flex items-center justify-center md:justify-start gap-4 text-gray-400 text-sm">

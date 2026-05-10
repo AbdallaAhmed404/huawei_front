@@ -100,7 +100,7 @@ export default function ReturnPolicyPage() {
                 
                 {/* Header Section */}
                 <div className="mb-12 border-b border-gray-100 pb-8">
-                    <h1 className="text-3xl md:text-4xl font-bold text-black mb-4 leading-tight">
+                    <h1 className="text-3xl md:text-4xl font-bold  mb-4 leading-tight">
                         {t.title}
                     </h1>
                     <div className="flex items-center gap-4 text-gray-400 text-sm font-medium">
