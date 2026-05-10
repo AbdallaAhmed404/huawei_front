@@ -161,7 +161,7 @@ export default function Portfolio() {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {latestProducts.map((item) => (
-            <Link key={item._id} href={`/product/${item._id}`} className="block  min-w-[100%] md:min-w-[calc(50%-12px)] h-full group">
+            <Link key={item._id} href={`/product/${item._id}-${item.name.replace(/\s+/g, '-').toLowerCase()}`} className="block  min-w-[100%] md:min-w-[calc(50%-12px)] h-full group">
               <div className={`flex flex-col md:flex-row bg-white rounded-[15px] overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-50 h-full ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
                 <div className="relative w-full md:w-[48%] bg-[#f3f4f1] flex items-center justify-center p-6 min-h-[360px]">
                   <Image src={item.image} alt={item.name} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-700" />
@@ -226,7 +226,7 @@ export default function Portfolio() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {categoryProducts.slice(0, 3).map((prod) => (
-                  <Link key={prod._id} href={`/product/${prod._id}`} className="block group">
+                  <Link key={prod._id} href={`/product/${prod._id}-${prod.name.replace(/\s+/g, '-').toLowerCase()}`} className="block group">
                     <div className="bg-white shadow-lg rounded-[15px] p-6 flex flex-col h-full transition-all border border-gray-50">
                       <div className="relative w-full aspect-[4/3] mb-6 rounded-[15px] overflow-hidden bg-white flex items-center justify-center">
                         <Image src={prod.image} alt={prod.name} fill className="object-contain p-6 transform group-hover:scale-105 transition-all duration-500" />

@@ -29,7 +29,7 @@ const translations = {
 
 const ProductCard = ({ product, t, lang }: { product: any, t: any, lang: string }) => (
   // إضافة Link حول الكارت بالكامل ليوجه لصفحة التفاصيل بناءً على الـ ID
-  <Link href={`/product/${product._id}`} className="block h-full group">
+  <Link href={`/product/${product._id}-${product.name.replace(/\s+/g, '-').toLowerCase()}`} className="block h-full group">
     <div className="bg-[#F9F9F9] rounded-[15px] p-6 flex flex-col transition-all duration-300  shadow-lg border border-transparent hover:border-gray-100 h-[400px]">
       <div className="relative w-full h-[160px] mb-6 flex items-center justify-center overflow-hidden">
         <img

@@ -90,7 +90,8 @@ export default function ProductPurchasePage() {
     const { lang } = useLang();
     const t = translations[lang];
     const router = useRouter();
-    const { id } = useParams();
+    const { id: slug } = useParams();
+const id = (slug as string).split('-')[0]; // هذا السطر يفصل الـ ID الحقيقي عن الاسم
     const [product, setProduct] = useState<Product | null>(null);
     const [gallery, setGallery] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -349,7 +350,7 @@ export default function ProductPurchasePage() {
                                         {product.variants.map((variant) => (
                                             <Link
                                                 key={variant._id}
-                                                href={`/product/${variant._id}`}
+                                                href={`/product/${variant._id}-${variant.modelName.replace(/\s+/g, '-').toLowerCase()}`}
                                                 className="border border-gray-200 p-4 rounded-[15px] hover:border-black transition-all group"
                                             >
                                                 <div className="flex justify-between items-center">

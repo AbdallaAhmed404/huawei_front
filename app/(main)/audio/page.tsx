@@ -27,7 +27,7 @@ const translations = {
 
 // مكون الكارد الأفقي للأوديو - محدث لبيانات الـ API ليدعم الترجمة والاتجاه
 const AudioHorizontalCard = ({ product, t, lang }: { product: any, t: any, lang: string }) => (
-  <Link href={`/product/${product._id}`} className="block group">
+  <Link href={`/product/${product._id}-${product.name.replace(/\s+/g, '-').toLowerCase()}`} className="block group">
     <div className={`bg-white rounded-[15px] p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 border border-transparent hover:border-gray-100 shadow-lg transition-all duration-300 min-h-[350px] ${lang === 'ar' ? 'md:flex-row-reverse' : ''}`}>
       <div className="w-full md:w-1/2 flex justify-center items-center">
         <img

@@ -96,11 +96,13 @@ export default function Navbar() {
     }
   }, [searchQuery, products]);
 
-  const handleProductClick = (id: string) => {
-    router.push(`/product/${id}`);
+  const handleProductClick = (product: any) => {
+    // الآن أصبح كائن product متاحاً داخل هذه الدالة
+    const slug = `${product._id}-${product.name.replace(/\s+/g, '-').toLowerCase()}`;
+    router.push(`/product/${slug}`);
     setIsSearchOpen(false);
     setSearchQuery("");
-  };
+};
 
   const handleLogout = () => {
     logout();
@@ -273,7 +275,7 @@ export default function Navbar() {
                     <div className={`flex flex-col gap-4 ${lang === 'ar' ? 'items-end' : 'items-start'}`}>
                       {filteredProducts.length > 0 ? (
                         filteredProducts.map((product) => (
-                          <div key={product._id} onClick={() => handleProductClick(product._id)} className="text-[13px] font-medium text-black hover:underline cursor-pointer transition-all inline-block w-fit">
+                          <div key={product._id} onClick={() => handleProductClick(product)} className="text-[13px] font-medium text-black hover:underline cursor-pointer transition-all inline-block w-fit">
                             {product.name}
                           </div>
                         ))
