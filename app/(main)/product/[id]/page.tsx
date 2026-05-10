@@ -81,6 +81,10 @@ interface Product {
     variants?: Product[]; // تم تحديثه ليدعم الـ populate من الـ Backend
 }
 
+const isVideo = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg|mov)$/i);
+};
+
 export default function ProductPurchasePage() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const { lang } = useLang();
@@ -580,11 +584,24 @@ export default function ProductPurchasePage() {
                                                         onClick={() => setSelectedImage(imgUrl)}
                                                         className={`${gridSpan} relative group overflow-hidden border-[0.5px] border-white cursor-pointer`}
                                                     >
-                                                        <img
-                                                            src={imgUrl}
-                                                            alt={`${item.label} ${imgIdx + 1}`}
-                                                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                                        />
+                                                        {/* الكود الجديد لدعم الفيديو والصور في الـ Grid */}
+                                                        {isVideo(imgUrl) ? (
+                                                            <video
+                                                                src={imgUrl}
+                                                                className="w-full h-full object-cover"
+                                                                autoPlay
+                                                                playsInline
+                                                                muted
+                                                                loop
+
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src={imgUrl}
+                                                                alt={`${item.label} ${imgIdx + 1}`}
+                                                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                            />
+                                                        )}
                                                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
                                                     </div>
                                                 );
@@ -604,11 +621,24 @@ export default function ProductPurchasePage() {
                                                             onClick={() => setSelectedImage(imgUrl)}
                                                             className="min-w-[calc(25%-12px)] relative bg-gray-50 rounded-[15px] overflow-hidden aspect-square border border-gray-100 cursor-pointer group"
                                                         >
-                                                            <img
-                                                                src={imgUrl}
-                                                                alt={`${item.label} ${imgIdx + 1}`}
-                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                            />
+                                                            {/* الكود الجديد لدعم الفيديو والصور في الـ Slider */}
+                                                            {isVideo(imgUrl) ? (
+                                                                <video
+                                                                    src={imgUrl}
+                                                                    className="w-full h-full object-cover"
+                                                                    autoPlay
+                                                                    playsInline
+                                                                    muted
+                                                                    loop
+
+                                                                />
+                                                            ) : (
+                                                                <img
+                                                                    src={imgUrl}
+                                                                    alt={`${item.label} ${imgIdx + 1}`}
+                                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                />
+                                                            )}
                                                         </div>
                                                     ))}
                                                 </div>
@@ -650,13 +680,25 @@ export default function ProductPurchasePage() {
                                     &times;
                                 </button>
 
+                                {/* الكود الجديد لعرض الفيديو بشكل كامل عند الضغط عليه */}
                                 <div className="relative max-w-5xl w-full h-full flex items-center justify-center">
-                                    <img
-                                        src={selectedImage}
-                                        alt="Full size view"
-                                        className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in duration-300"
-                                        onClick={(e) => e.stopPropagation()}
-                                    />
+                                    {selectedImage && isVideo(selectedImage) ? (
+                                        <video
+                                            src={selectedImage}
+                                            controls
+                                            autoPlay
+                                            muted={false}
+                                            className="max-w-full max-h-full shadow-2xl animate-in zoom-in duration-300"
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    ) : (
+                                        <img
+                                            src={selectedImage || ''}
+                                            alt="Full size view"
+                                            className="max-w-full max-h-full object-contain shadow-2xl animate-in zoom-in duration-300"
+                                            onClick={(e) => e.stopPropagation()}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         )}
