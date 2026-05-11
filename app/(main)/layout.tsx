@@ -6,16 +6,36 @@ import { LanguageProvider } from "./context/LanguageContext";
 import ClientLayoutContent from "./ClientLayoutContent"; // استدعاء الملف الجديد
 
 export const metadata: Metadata = {
-  title: { default: "Huawei", template: "%s | Huawei" },
-  description: "Experience the future of technology with Huawei's official e-commerce platform. Shop the latest smartphones, laptops, and premium accessories.",
+  title: { default: "Huawei Oman | Official Store", template: "%s | Huawei Oman" },
+  description: "Experience the future of technology with Huawei's official e-commerce platform. Shop the latest smartphones, Wearable, Audio and Tablet.",
+  keywords: ["Huawei", "Huawei Oman", "هواوي عمان", "Huaweioman", "Wearable"],
   icons: {
     icon: "/favicon.ico",
   },
+  alternates: {
+    canonical: "https://huaweioman.com",
+  }
 };
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "OnlineStore",
+            "name": "Huawei Oman",
+            "url": "https://huaweioman.com",
+            "description": "The official e-commerce platform for Huawei products in Oman.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressCountry": "OM"
+            }
+          }),
+        }}
+      />
       {/* سكربت عداد الزوار */}
       <Script id="visitor-counter" strategy="afterInteractive">
         {`
