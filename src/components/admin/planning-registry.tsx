@@ -418,7 +418,7 @@ export default function StoreCustomizer() {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {products.map(product => (
                 <div key={product._id} className="bg-[#0a0a0a] border border-white/5 p-6 rounded-[2.5rem] hover:border-white/20 transition-all">
                   <div className="w-full aspect-square rounded-3xl bg-white/5 overflow-hidden border border-white/5 mb-6">
