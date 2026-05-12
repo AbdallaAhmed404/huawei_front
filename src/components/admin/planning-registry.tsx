@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   ImageIcon, Layout, Plus, Trash2, Smartphone, Tablet, Watch, Headphones,
-  CheckCircle, Loader2, X, Link as LinkIcon, Type, Images, Edit, Save, Upload as UploadIcon, Monitor
+  CheckCircle, Loader2, X, Link as LinkIcon, Type, Images, Edit, Save, Upload as UploadIcon, Monitor, ArrowUp, ArrowDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -193,6 +193,18 @@ export default function StoreCustomizer() {
     } catch (err) { console.error(err); alert("Failed to update popup"); } finally { setPopupLoading(false); }
   };
 
+  const moveGroup = (index: number, direction: "up" | "down") => {
+    const newItems = [...galleryItems];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+
+    // التأكد أن التحريك ضمن حدود المصفوفة
+    if (targetIndex < 0 || targetIndex >= newItems.length) return;
+
+    // عملية التبديل (Swapping)
+    [newItems[index], newItems[targetIndex]] = [newItems[targetIndex], newItems[index]];
+    setGalleryItems(newItems);
+  };
+
   return (
     <div className="flex flex-col min-h-screen text-white font-sans pb-20 bg-black">
 
@@ -231,11 +243,10 @@ export default function StoreCustomizer() {
 
         {/* --- MODAL الجاليري المحسن --- */}
         {isGalleryModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
-            <div className="bg-[#0f0f0f] border border-white/10 w-full max-w-4xl rounded-[2.5rem] p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-              <div className="flex justify-between items-center sticky top-0 bg-[#0f0f0f] pb-4 z-20">
-                <h3 className="text-xl font-bold">Manage Immersive Gallery</h3>
-                <button onClick={() => setIsGalleryModalOpen(false)} className="text-zinc-500 hover:text-white"><X /></button>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl ">
+            <div className="bg-[#0f0f0f] border border-white/10 w-full max-w-4xl rounded-[2.5rem] p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto scrollbar-hide ">
+              <div className="flex justify-end items-center sticky top-0 bg-transparent pb-4  z-20">
+                <button onClick={() => setIsGalleryModalOpen(false)} className="text-zinc-500 hover:text-white "><X /></button>
               </div>
 
               <div className="space-y-6">
@@ -252,7 +263,7 @@ export default function StoreCustomizer() {
                 </div>
 
                 {selectedProductId && (
-                  <div className="space-y-8">
+                  <div className="space-y-8 ">
                     <div className="flex justify-between items-center">
                       <h4 className="text-sm font-bold text-white uppercase">Gallery Content Groups</h4>
                       <button onClick={handleAddGroup} className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all">
@@ -261,13 +272,34 @@ export default function StoreCustomizer() {
                     </div>
 
                     {galleryItems.map((item, idx) => (
-                      <div key={idx} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4 relative group/box">
-                        <button
-                          onClick={() => setGalleryItems(galleryItems.filter((_, i) => i !== idx))}
-                          className="absolute top-4 right-4 p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500 hover:text-white transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                      <div key={idx} className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl space-y-4 relative group/box ">
+                        <div className="absolute top-2 right-4 flex gap-2 ">
+                          {/* سهم لأعلى */}
+                          <button
+                            onClick={() => moveGroup(idx, "up")}
+                            disabled={idx === 0}
+                            className="p-2 bg-white/5 text-zinc-400 rounded-xl hover:bg-white/10 hover:text-white disabled:opacity-0 transition-all"
+                          >
+                            <ArrowUp size={16} />
+                          </button>
+
+                          {/* سهم لأسفل */}
+                          <button
+                            onClick={() => moveGroup(idx, "down")}
+                            disabled={idx === galleryItems.length - 1}
+                            className="p-2 bg-white/5 text-zinc-400 rounded-xl hover:bg-white/10 hover:text-white disabled:opacity-0 transition-all"
+                          >
+                            <ArrowDown size={16} />
+                          </button>
+
+                          {/* زر الحذف */}
+                          <button
+                            onClick={() => setGalleryItems(galleryItems.filter((_, i) => i !== idx))}
+                            className="p-2 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-50 hover:text-white transition-all"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
 
                         <div className="space-y-2">
                           <label className="text-[10px] font-extrabold text-zinc-500 uppercase tracking-widest">Group Title</label>

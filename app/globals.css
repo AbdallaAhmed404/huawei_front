@@ -110,3 +110,16 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
 }
+/* إخفاء السكرول بار للمودالات والعناصر المحددة */
+@layer utilities {
+  .scrollbar-hide {
+    /* Chrome, Safari, Edge */
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    /* Firefox */
+    scrollbar-width: none;
+    /* IE and Edge القديم */
+    -ms-overflow-style: none;
+  }
+}
