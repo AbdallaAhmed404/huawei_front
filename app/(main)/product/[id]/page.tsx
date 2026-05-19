@@ -636,7 +636,7 @@ export default function ProductPurchasePage() {
 
                                     {item.isGrid ? (
                                         /* --- أولاً: عرض نظام الـ Grid الذكي --- */
-                                        <div className="grid grid-cols-2 md:grid-cols-4 grid-rows-[200px_200px] md:grid-rows-[300px_300px] gap-0 overflow-hidden rounded-[20px] border border-gray-200">
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-0 overflow-hidden rounded-[20px]">
                                             {item.images.map((imgUrl, imgIdx) => {
                                                 let gridSpan = "col-span-1 row-span-1";
                                                 if (item.images.length === 1) gridSpan = "col-span-4 row-span-2";
