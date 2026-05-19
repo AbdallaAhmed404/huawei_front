@@ -41,9 +41,17 @@ const translations = {
 };
 
 const OMAN_CITIES = [
-    "Muscat (مسقط)", "Seeb (السيب)", "Salalah (صلالة)", "Bawshar (بوشر)",
-    "Sohar (صحار)", "Suwayq (السويق)", "Ibri (عبري)", "Saham (صحم)",
-    "Barka (بركاء)", "Rustaq (الرستاق)", "Nizwa (نزوى)", "Sur (صور)"
+    "Muscat (مسقط)",
+    "Dhofar (ظفار)",
+    "Musandam (مسندم)",
+    "Al Buraimi (البريمي)",
+    "Ad Dakhiliyah (الداخلية)",
+    "Al Batinah North (شمال الباطنة)",
+    "Al Batinah South (جنوب الباطنة)",
+    "Ash Sharqiyah North (شمال الشرقية)",
+    "Ash Sharqiyah South (جنوب الشرقية)",
+    "Ad Dhahirah (الظاهرة)",
+    "Al Wusta (الوسطى)"
 ];
 
 
