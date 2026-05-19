@@ -87,7 +87,8 @@ export default function OrderRegistry() {
     const matchesSearch =
       order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.userData?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.userData?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      order.userData?.email?.toLowerCase().includes(searchTerm.toLowerCase())||
+    order.userData?.phone?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab = activeTab === "ALL" || order.status === activeTab;
     return matchesSearch && matchesTab;
   });

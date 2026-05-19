@@ -23,7 +23,7 @@ const translations = {
     noResults: 'No results for "{query}"',
     searchPlaceholder: "Search HUAWEI...",
     account: "Account",
-    trackOrder: "Track order",
+    trackOrder: "order",
     logout: "Logout",
     login: "Login",
   },
@@ -40,7 +40,7 @@ const translations = {
     noResults: 'لا توجد نتائج لـ "{query}"',
     searchPlaceholder: "ابحث في هواوي...",
     account: "حسابي",
-    trackOrder: "تتبع الطلب",
+    trackOrder: "الطلب",
     logout: "تسجيل الخروج",
     login: "تسجيل الدخول",
   }

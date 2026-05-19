@@ -20,6 +20,8 @@ interface CartItem {
     colorCode?: string;
     modelName: string;
     discount: number;
+    isPreOrder?: boolean;
+    depositAmount?: number;
 }
 
 interface CartContextType {

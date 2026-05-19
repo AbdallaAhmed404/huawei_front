@@ -74,7 +74,7 @@ export default function CheckoutPage() {
     const { lang } = useLang();
     const t = translations[lang];
     const { cart, appliedCoupon } = useCart();
-    const { isAuthenticated, user} = useAuth(); // سحب حالة التسجيل
+    const { isAuthenticated, user } = useAuth(); // سحب حالة التسجيل
     const [loading, setLoading] = useState(false);
     const [orderSaved, setOrderSaved] = useState(false);
 
@@ -216,7 +216,9 @@ export default function CheckoutPage() {
                     photo: item.image,
                     price: item.price - item.discount,
                     quantity: item.quantity,
-                    colorCode: item.colorCode || ""
+                    colorCode: item.colorCode || "",
+                    isPreOrder: item.isPreOrder, // <-- تأكد أن هذا الحقل موجود هنا
+                    depositAmount: item.depositAmount // <-- تأكد أن هذا الحقل موجود هنا
                 })),
                 total: finalTotal,
                 appliedCouponCode: appliedCoupon ? appliedCoupon.code : null,

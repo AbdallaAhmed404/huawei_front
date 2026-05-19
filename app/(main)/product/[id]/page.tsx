@@ -27,7 +27,11 @@ const translations = {
         stock: " This color is currently out of stock",
         Qty: "Qty",
         cart: "Add to cart",
-        Check: "Check out"
+        Check: "Check out",
+        payDepositInfo: "You can pay a {percentage}% deposit in advance ({depositAmount} OMR) of the total price.",
+        availableUntil: "Available until: {date}",
+        loginRequired: "You must be logged in to complete the pre-order.",
+        preOrderNow: "Pre-order Now"
     },
     ar: {
         back: "رجوع",
@@ -44,7 +48,11 @@ const translations = {
         stock: "هذا اللون غير متوفر",
         Qty: "الكمية",
         cart: "اضف للعربة",
-        Check: "اتمام الشراء"
+        Check: "اتمام الشراء",
+        payDepositInfo: "يمكنك دفع عربون مسبق بنسبة {percentage}% ({depositAmount} ر.ع) من قيمة المنتج.",
+        availableUntil: "متاح حتى: {date}",
+        loginRequired: "يجب تسجيل الدخول أولاً لإتمام الطلب المسبق.",
+        preOrderNow: "احجز الآن", // أضف هذا
     }
 };
 // --- تعريف الأنواع (Interfaces) لمنع أخطاء TypeScript ---
@@ -79,6 +87,11 @@ interface Product {
     gifts: Gift[];
     colors: ColorVariant[];
     variants?: Product[]; // تم تحديثه ليدعم الـ populate من الـ Backend
+    preOrder?: {
+        isPreOrder: boolean;
+        depositPercentage: number;
+        availableUntil: string;
+    };
 }
 
 const isVideo = (url: string) => {
@@ -91,7 +104,7 @@ export default function ProductPurchasePage() {
     const t = translations[lang];
     const router = useRouter();
     const { id: slug } = useParams();
-const id = (slug as string).split('-')[0]; // هذا السطر يفصل الـ ID الحقيقي عن الاسم
+    const id = (slug as string).split('-')[0]; // هذا السطر يفصل الـ ID الحقيقي عن الاسم
     const [product, setProduct] = useState<Product | null>(null);
     const [gallery, setGallery] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -100,6 +113,41 @@ const id = (slug as string).split('-')[0]; // هذا السطر يفصل الـ 
     // إضافة State لمؤشر الصورة الحالية
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const { isAuthenticated } = useAuth();
+
+    const isPreOrderActive =
+        product?.preOrder?.isPreOrder &&
+        product?.preOrder?.availableUntil &&
+        new Date(product.preOrder.availableUntil) > new Date();
+
+    // 2. دالة التعامل مع زر الحجز المسبق
+    const handlePreOrder = () => {
+        if (!isAuthenticated) {
+            alert(t.loginRequired);
+            router.push('/checkout-method'); // توجيه لصفحة اللوج ان
+            return;
+        }
+
+        if (product && selectedColor) {
+            // حساب قيمة العربون الفعلي
+            const depositPrice = product.price * (product.preOrder!.depositPercentage / 100);
+
+            addToCart({
+                _id: product._id,
+                name: `(Pre-Order) ${product.name}`,
+                price: depositPrice, // نرسل قيمة العربون فقط للسلة
+                image: selectedColor ? selectedColor.images[0] : product.image,
+                quantity: 1,
+                colorCode: selectedColor?.colorCode || 'Default',
+                modelName: product.modelName,
+                discount: 0,
+                // --- هنا يتم تمرير البيانات الإضافية ---
+                isPreOrder: true,
+                depositAmount: depositPrice
+            });
+
+            router.push('/checkout'); // توجيه للدفع مباشرة
+        }
+    };
 
     // حالة التحكم في السلايدر لكل قسم في الجاليري
     const [gallerySlideIndices, setGallerySlideIndices] = useState<number[]>([]);
@@ -429,71 +477,88 @@ const id = (slug as string).split('-')[0]; // هذا السطر يفصل الـ 
 
                         <div className="sticky bottom-0 bg-white/90 backdrop-blur-md pt-8 pb-4 border-t border-gray-100 flex flex-col gap-4">
                             <div className="flex justify-between items-end">
-                                <div className="min-w-0">
-                                    {/* السعر بعد الخصم (السعر الحالي الذي يدفعه العميل) */}
+                                <div className="min-w-0 w-full space-y-3">
+                                    {/* السعر الأساسي */}
                                     <div className="flex items-center gap-1.5 whitespace-nowrap">
                                         <div className="relative w-6 h-6 flex-shrink-0">
-                                            <Image
-                                                src="/oman-riyal.svg"
-                                                alt="OMR"
-                                                fill
-                                                className="object-contain"
-                                            />
+                                            <Image src="/oman-riyal.svg" alt="OMR" fill className="object-contain" />
                                         </div>
                                         <p className="text-[24px] font-bold text-black truncate">
-                                            {(product.price - (product.discount || 0)).toLocaleString()}
+                                            {/* عرض السعر بالكامل */}
+                                            {product.price.toLocaleString()}
                                         </p>
 
-                                        {/* السعر الأصلي قبل الخصم (عليه خط ولونه رمادي) */}
-                                        {product.discount > 0 && (
+                                        {/* السعر قبل الخصم (إن وجد خصم والمنتج ليس حجز مسبق) */}
+                                        {product.discount > 0 && !isPreOrderActive && (
                                             <div className="flex items-center gap-1 ml-2 opacity-60">
                                                 <div className="relative w-4 h-4 flex-shrink-0">
-                                                    <Image
-                                                        src="/oman-riyal.svg"
-                                                        alt="OMR"
-                                                        fill
-                                                        className="object-contain"
-                                                    />
+                                                    <Image src="/oman-riyal.svg" alt="OMR" fill className="object-contain" />
                                                 </div>
                                                 <p className="text-[16px] text-zinc-400 line-through truncate">
-                                                    {product.price?.toLocaleString()}
+                                                    {(product.price + product.discount).toLocaleString()}
                                                 </p>
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* تفاصيل الخصم: القيمة الموفرة */}
-                                    {product.discount > 0 && (
-                                        <div className="mt-1 flex items-center gap-1 whitespace-nowrap">
+                                    {/* تفاصيل الخصم (تظهر فقط إذا لم يكن حجز مسبق) */}
+                                    {product.discount > 0 && !isPreOrderActive && (
+                                        <div className="flex items-center gap-1 whitespace-nowrap">
                                             <p className="text-[13px] text-[#CF1322] font-bold uppercase">{t.Save}</p>
                                             <div className="relative w-3.5 h-3.5 flex-shrink-0">
-                                                <Image
-                                                    src="/oman-riyal.svg"
-                                                    alt="OMR"
-                                                    fill
-                                                    className="object-contain"
-                                                />
+                                                <Image src="/oman-riyal.svg" alt="OMR" fill className="object-contain" />
                                             </div>
                                             <p className="text-[13px] font-bold truncate">
                                                 {product.discount.toLocaleString()}
                                             </p>
                                         </div>
                                     )}
+
+                                    {/* رسالة الطلب المسبق (تظهر فقط لو كان الوقت لم ينتهِ بعد) */}
+                                    {isPreOrderActive && product.preOrder && (
+                                        <div className="p-4 bg-red-50 border border-[#CF1322]/20 rounded-[15px]">
+                                            <p className="text-[#CF1322] font-bold text-sm mb-1 leading-relaxed">
+                                                {t.payDepositInfo
+                                                    .replace('{percentage}', product.preOrder.depositPercentage.toString())
+                                                    .replace('{depositAmount}', (product.price * (product.preOrder.depositPercentage / 100)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }))}
+                                            </p>
+                                            <p className="text-[#CF1322]/80 text-xs font-bold mt-2">
+                                                {t.availableUntil.replace('{date}', new Date(product.preOrder.availableUntil).toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' }))}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="mt-4 w-full">
                                 {selectedColor && selectedColor.count > 0 ? (
-                                    <>
-                                        <button onClick={handleAddToCart} className="bg-white border-2 border-black py-4 rounded-[15px] font-bold text-sm hover:bg-gray-50 transition-colors">
-                                            {t.cart}
+                                    isPreOrderActive ? (
+                                        /* زر الطلب المسبق الوحيد (يظهر فقط قبل انتهاء التاريخ) */
+                                        <button
+                                            onClick={handlePreOrder}
+                                            className="w-full bg-[#CF1322] text-white py-4 rounded-[15px] font-bold text-sm hover:bg-[#b0101d] transition-colors shadow-lg shadow-red-600/20"
+                                        >
+                                            {t.preOrderNow}
                                         </button>
-                                        <button onClick={handleCheckout} className="bg-[#CF1322] text-white py-4 rounded-[15px] font-bold text-sm hover:bg-[#b0101d] transition-colors">
-                                            {t.Check}
-                                        </button>
-                                    </>
+                                    ) : (
+                                        /* الأزرار العادية (ترجع تلقائياً لو التاريخ عدى أو المنتج عادي) */
+                                        <div className="grid grid-cols-2 gap-4 w-full">
+                                            <button
+                                                onClick={handleAddToCart}
+                                                className="bg-white border-2 border-black py-4 rounded-[15px] font-bold text-sm hover:bg-gray-50 transition-colors"
+                                            >
+                                                {t.cart}
+                                            </button>
+                                            <button
+                                                onClick={handleCheckout}
+                                                className="bg-[#CF1322] text-white py-4 rounded-[15px] font-bold text-sm hover:bg-[#b0101d] transition-colors"
+                                            >
+                                                {t.Check}
+                                            </button>
+                                        </div>
+                                    )
                                 ) : (
-                                    <div className="col-span-2 py-4 px-6 bg-gray-100 text-gray-500 rounded-[15px] font-bold text-center border border-gray-200">
+                                    <div className="w-full py-4 px-6 bg-gray-100 text-gray-500 rounded-[15px] font-bold text-center border border-gray-200">
                                         {t.stock}
                                     </div>
                                 )}

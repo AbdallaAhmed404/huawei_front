@@ -26,6 +26,11 @@ interface Product {
   gifts: Gift[];
   countInStock: number;
   variants: string[]; // إضافة حقل النسخ المرتبطة لتخزين الـ IDs
+  preOrder?: {
+    isPreOrder: boolean;
+    depositPercentage: number;
+    availableUntil: string | Date;
+  };
 }
 
 const CATEGORIES = ["Smartphone", "Tablet", "Audio", "Wearable"] as const;
@@ -54,11 +59,15 @@ export default function ProductRegistry() {
     price: 0, discount: 0, count: 0,
     category: "Smartphone", subCategory: "Mate Series",
     colors: [], gifts: [], countInStock: 0,
-    variants: [] // تهيئة مصفوفة النسخ
+    variants: [], preOrder: {
+      isPreOrder: false,
+      depositPercentage: 100,
+      availableUntil: "",
+    }
   };
 
   const [formData, setFormData] = useState<Product>(initialForm);
-  
+
   const fetchProducts = async () => {
     try {
       const res = await axios.get("https://api.huaweioman.com/admin/allpr");
@@ -178,7 +187,25 @@ export default function ProductRegistry() {
                 </td>
                 <td className="p-8 text-right">
                   <div className="flex justify-end gap-3">
-                    <button onClick={() => { setFormData({ ...p, variants: p.variants || [] }); setIsEditing(true); setIsFormOpen(true); }} className="p-3 bg-zinc-800/50 hover:bg-white/10 rounded-xl text-zinc-400 hover:text-white transition-all"><Pencil size={18} /></button>
+                    <button
+                      onClick={() => {
+                        setFormData({
+                          ...p,
+                          variants: p.variants || [],
+                          // نضمن هنا أن الـ preOrder موجود دائماً بقيم افتراضية حتى لو المنتج قديم
+                          preOrder: {
+                            isPreOrder: p.preOrder?.isPreOrder || false,
+                            depositPercentage: p.preOrder?.depositPercentage || 100,
+                            availableUntil: p.preOrder?.availableUntil || "",
+                          }
+                        });
+                        setIsEditing(true);
+                        setIsFormOpen(true);
+                      }}
+                      className="p-3 bg-zinc-800/50 hover:bg-white/10 rounded-xl text-zinc-400 hover:text-white transition-all"
+                    >
+                      <Pencil size={18} />
+                    </button>
                     <button onClick={() => handleDelete(p._id!)} className="p-3 bg-zinc-800/50 hover:bg-red-900/30 rounded-xl text-zinc-400 hover:text-red-500 transition-all"><Trash2 size={18} /></button>
                   </div>
                 </td>
@@ -237,16 +264,16 @@ export default function ProductRegistry() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 p-8 bg-white/[0.02] rounded-[2rem] border border-white/5">
                   <SelectField label="Global Category" value={formData.category} options={CATEGORIES} onChange={(val: string) => setFormData({ ...formData, category: val as any, subCategory: SUB_CATEGORIES[val][0], variants: [] })} />
                   <SelectField label="Line / Series" value={formData.subCategory} options={SUB_CATEGORIES[formData.category]} onChange={(val: string) => setFormData({ ...formData, subCategory: val, variants: [] })} />
-                  
+
                   <div className="space-y-2">
-                    <label className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2"><Layers size={14}/> Linked Variants</label>
-                    <select 
-                      multiple 
-                      value={formData.variants} 
+                    <label className="text-[11px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2"><Layers size={14} /> Linked Variants</label>
+                    <select
+                      multiple
+                      value={formData.variants}
                       onChange={(e) => {
                         const values = Array.from(e.target.selectedOptions, option => option.value);
                         setFormData({ ...formData, variants: values });
@@ -263,8 +290,8 @@ export default function ProductRegistry() {
                       }
                     </select>
                     <div className="flex justify-between items-center px-1">
-                        <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Hold Ctrl/Cmd to multi-select</p>
-                        <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest mt-1">{formData.variants.length} Selected</p>
+                      <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-1">Hold Ctrl/Cmd to multi-select</p>
+                      <p className="text-[9px] text-red-500 font-bold uppercase tracking-widest mt-1">{formData.variants.length} Selected</p>
                     </div>
                   </div>
                 </div>
@@ -288,23 +315,23 @@ export default function ProductRegistry() {
                         <div className="flex-1 space-y-3">
                           <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-1">
-                                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{col.colorCode}</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[9px] font-black text-zinc-600 uppercase">Stock:</span>
-                                    <input 
-                                    type="number" 
-                                    min="0"
-                                    value={col.count} 
-                                    placeholder="0"
-                                    className="w-16 bg-black border border-white/10 rounded-lg px-2 py-1 text-xs outline-none focus:border-red-600 transition-all font-bold text-red-500"
-                                    onChange={(e) => {
-                                        const newCols = [...formData.colors];
-                                        newCols[idx].count = Number(e.target.value);
-                                        const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
-                                        setFormData({ ...formData, colors: newCols, countInStock: total });
-                                    }}
-                                    />
-                                </div>
+                              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{col.colorCode}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[9px] font-black text-zinc-600 uppercase">Stock:</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={col.count}
+                                  placeholder="0"
+                                  className="w-16 bg-black border border-white/10 rounded-lg px-2 py-1 text-xs outline-none focus:border-red-600 transition-all font-bold text-red-500"
+                                  onChange={(e) => {
+                                    const newCols = [...formData.colors];
+                                    newCols[idx].count = Number(e.target.value);
+                                    const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
+                                    setFormData({ ...formData, colors: newCols, countInStock: total });
+                                  }}
+                                />
+                              </div>
                             </div>
                             <div className="flex gap-2">
                               {col.images.map((img, i) => (
@@ -335,9 +362,9 @@ export default function ProductRegistry() {
                           </div>
                         </div>
                         <button type="button" onClick={() => {
-                            const newCols = formData.colors.filter((_, i) => i !== idx);
-                            const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
-                            setFormData({ ...formData, colors: newCols, countInStock: total });
+                          const newCols = formData.colors.filter((_, i) => i !== idx);
+                          const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
+                          setFormData({ ...formData, colors: newCols, countInStock: total });
                         }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
                       </div>
                     ))}
@@ -377,6 +404,64 @@ export default function ProductRegistry() {
                   </div>
                 </div>
 
+                {/* Pre-Order Configuration Section */}
+                <div className="space-y-6 p-8 bg-zinc-900/50 rounded-[2rem] border border-white/5">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-lg font-bold flex items-center gap-3">
+                      <Box className="text-red-600" /> Pre-Order Settings
+                    </h3>
+                    <div className="flex items-center gap-3">
+                      <span className="text-xs font-bold text-zinc-500 uppercase tracking-widest">Enable Pre-order</span>
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const currentPreOrder = formData.preOrder || initialForm.preOrder;
+                          setFormData({
+                            ...formData,
+                            preOrder: {
+                              ...currentPreOrder!,
+                              isPreOrder: !currentPreOrder?.isPreOrder
+                            }
+                          });
+                        }}
+                        className={`w-12 h-6 rounded-full transition-all relative ${formData.preOrder?.isPreOrder ? 'bg-red-600' : 'bg-zinc-700'}`}
+                      >
+                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.preOrder?.isPreOrder ? 'left-7' : 'left-1'}`} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {formData.preOrder?.isPreOrder && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-white/5"
+                    >
+                      <InputField
+                        label="Deposit Percentage (%)"
+                        type="number"
+                        // إضافة || 0 تمنع حدوث الإيرور
+                        value={formData.preOrder?.depositPercentage || 0}
+                        onChange={(e: any) => setFormData({
+                          ...formData,
+                          preOrder: { ...formData.preOrder!, depositPercentage: Number(e.target.value) }
+                        })}
+                      />
+                      <InputField
+                        label="Available Until (Date)"
+                        type="date"
+                        // إضافة || "" تمنع حدوث الإيرور
+                        value={typeof formData.preOrder?.availableUntil === 'string' ? formData.preOrder.availableUntil.split('T')[0] : ''}
+                        onChange={(e: any) => setFormData({
+                          ...formData,
+                          preOrder: { ...formData.preOrder!, availableUntil: e.target.value }
+                        })}
+                      />
+                    </motion.div>
+                  )}
+                </div>
+
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 p-10 bg-red-600/5 rounded-[2.5rem] border border-red-600/10">
                   <InputField label="Base Price (OMR)" type="number" value={formData.price} onChange={(e: any) => setFormData({ ...formData, price: Number(e.target.value) })} />
                   <InputField label="Marketing Discount" type="number" value={formData.discount} onChange={(e: any) => setFormData({ ...formData, discount: Number(e.target.value) })} />
@@ -399,7 +484,7 @@ export default function ProductRegistry() {
       <AnimatePresence>
         {popup.show && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
@@ -410,7 +495,7 @@ export default function ProductRegistry() {
               </div>
               <h3 className="text-xl font-bold mb-2 uppercase tracking-tighter">System Notification</h3>
               <p className="text-zinc-400 text-sm mb-8 leading-relaxed">{popup.message}</p>
-              
+
               <div className="flex gap-3">
                 {popup.type === 'confirm' ? (
                   <>
