@@ -1,7 +1,7 @@
 "use client";
-
+import * as XLSX from "xlsx";
 import React, { useState, useEffect } from "react";
-import { Search, CheckCircle2, Clock, Truck, Ban, Trash2, Loader2, MapPin, Phone } from "lucide-react";
+import { Search, CheckCircle2, Clock, Truck, Ban, Trash2, Loader2, MapPin, Phone, FileDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // 1. تعريف شكل البيانات (Interfaces)
@@ -87,8 +87,8 @@ export default function OrderRegistry() {
     const matchesSearch =
       order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.userData?.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.userData?.email?.toLowerCase().includes(searchTerm.toLowerCase())||
-    order.userData?.phone?.toLowerCase().includes(searchTerm.toLowerCase());
+      order.userData?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.userData?.phone?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesTab = activeTab === "ALL" || order.status === activeTab;
     return matchesSearch && matchesTab;
   });
@@ -98,6 +98,31 @@ export default function OrderRegistry() {
       <Loader2 className="animate-spin" size={40} />
     </div>
   );
+
+
+
+  const exportToExcel = () => {
+    // تجهيز البيانات بالشكل اللي الإكسيل يفهمه
+    const dataToExport = orders.map((order) => ({
+      "Order ID": order._id,
+      "First Name": order.userData?.firstName,
+      "Last Name": order.userData?.lastName,
+      "Email": order.userData?.email,
+      "Phone": order.userData?.phone,
+      "City": order.userData?.city,
+      "District": order.userData?.district,
+      "Total (OMR)": order.total,
+      "Status": order.status
+    }));
+
+    // إنشاء الورقة (Worksheet)
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Orders");
+
+    // تحميل الملف
+    XLSX.writeFile(workbook, "Orders_Data.xlsx");
+  };
 
   return (
     <div className="p-8 space-y-6 bg-black min-h-screen font-sans">
@@ -114,7 +139,7 @@ export default function OrderRegistry() {
           />
         </div>
         <div className="flex bg-black/50 p-1 rounded-xl border border-white/5 overflow-x-auto">
-          {["ALL", "Pending", "Processing", "Completed", "Cancelled"].map((tab) => (
+          {["ALL", "Pending", "Processing", "Completed"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -126,6 +151,13 @@ export default function OrderRegistry() {
               {tab}
             </button>
           ))}
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl font-bold text-[13px] transition-all"
+          >
+            <FileDown size={18} /> {/* تأكد من استيراد أيقونة FileDown من lucide-react */}
+            Export Excel
+          </button>
         </div>
       </div>
 
