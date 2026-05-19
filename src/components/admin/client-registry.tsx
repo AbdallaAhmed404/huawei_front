@@ -9,6 +9,7 @@ interface OrderItem {
   name: string;
   photo: string;
   quantity: number;
+  colorCode: string;
 }
 
 interface Order {
@@ -210,6 +211,16 @@ export default function OrderRegistry() {
                         <div className="flex flex-col">
                           <span className="text-xs text-white font-medium truncate max-w-[150px]">{item.name}</span>
                           <span className="text-[10px] text-zinc-500 font-bold">QTY: {item.quantity}</span>
+                          <div
+                            style={{
+                              backgroundColor: item.colorCode,
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              display: 'inline-block', // ليظهر بجانب النصوص إذا أردت
+                              border: '1px solid #ccc' // اختياري: لإظهار إطار إذا كان اللون أبيض أو فاتح جداً
+                            }}
+                          />
                         </div>
                       </div>
                     ))}

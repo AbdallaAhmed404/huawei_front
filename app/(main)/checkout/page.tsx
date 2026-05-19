@@ -235,6 +235,7 @@ export default function CheckoutPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)
+                
             });
 
             const orderResult = await orderResponse.json();
