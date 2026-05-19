@@ -715,13 +715,13 @@ export default function ProductPurchasePage() {
                                                 <>
                                                     <button
                                                         onClick={() => prevGallerySlide(idx)}
-                                                        className="absolute -left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
+                                                        className="absolute -left-6 top-1/2 -translate-y-1/2 p-3 rounded-full  text-black  transition-all z-10"
                                                     >
                                                         <ChevronLeft size={24} />
                                                     </button>
                                                     <button
                                                         onClick={() => nextGallerySlide(idx)}
-                                                        className="absolute -right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white shadow-xl text-black hover:bg-gray-50 transition-all z-10"
+                                                        className="absolute -right-6 top-1/2 -translate-y-1/2 p-3 rounded-full text-black  transition-all z-10"
                                                     >
                                                         <ChevronRight size={24} />
                                                     </button>
