@@ -624,9 +624,9 @@ export default function ProductPurchasePage() {
                 {/* --- قسم الجاليري المتطور (Grid أو Slider) --- */}
                 {gallery.length > 0 && (
                     <section className="mt-24 border-t border-gray-100 pt-16">
-                        <div className="space-y-24">
+                        <div className="space-y-10 md:space-y-24">
                             {gallery.map((item, idx) => (
-                                <div key={idx} className="space-y-6">
+                                <div key={idx} className="">
                                     {/* عنوان المجموعة مع خط أحمر جانبي */}
                                     <div className="flex justify-start">
                                         <h3 className="text-[22px] font-bold text-black pl-4 border-l-4 border-[#CF1322] text-left">
