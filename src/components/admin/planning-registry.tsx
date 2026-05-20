@@ -13,7 +13,7 @@ const FULL_CATEGORIES = [
   { id: 1, name: "Smartphone", icon: <Smartphone size={24} />, subs: ["Mate Series", "Pura Series", "nova Series"] },
   { id: 3, name: "Tablet", icon: <Tablet size={24} />, subs: ["HUAWEI MatePad Pro Series", "HUAWEI MatePad Mini Series", "HUAWEI MatePad Series", "HUAWEI MatePad SE Series"] },
   { id: 4, name: "Wearable", icon: <Watch size={24} />, subs: ["WATCH Ultimate Series", "WATCH Series", "WATCH GT Series", "WATCH FIT Series", "WATCH D Series", "Band Series"] },
-  { id: 5, name: "Audio", icon: <Headphones size={24} />, subs: ["FreeBuds Series", "FreeClip Series", "FreeArc Series", "FreeLace Series", "Eyewear"] },
+  { id: 5, name: "Audio", icon: <Headphones size={24} />, subs: ["FreeBuds Series", "FreeClip Series", "FreeArc Series"] },
 ];
 
 export default function StoreCustomizer() {

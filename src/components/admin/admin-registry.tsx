@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 
 interface Gift { name: string; image: string; }
-interface ColorVariant { colorCode: string; images: string[]; count: number; }
+interface ColorVariant {colorName: string; sku: string; colorCode: string; images: string[]; count: number; }
 
 interface Product {
   _id?: string;
@@ -299,75 +299,101 @@ export default function ProductRegistry() {
                 <div className="space-y-6">
                   <div className="flex justify-between items-center">
                     <h3 className="text-lg font-bold flex items-center gap-3"><Palette className="text-red-600" /> Variant Color Palette</h3>
-                    <button type="button" onClick={() => setFormData({ ...formData, colors: [...formData.colors, { colorCode: "#000000", images: [], count: 0 }] })} className="text-xs font-bold text-red-500 hover:text-red-400 transition-colors uppercase tracking-widest">+ Add Variant</button>
+                    <button type="button" onClick={() => setFormData({ ...formData, colors: [...formData.colors, { colorName: "", sku: "",colorCode: "#000000", images: [], count: 0 }] })} className="text-xs font-bold text-red-500 hover:text-red-400 transition-colors uppercase tracking-widest">+ Add Variant</button>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {formData.colors.map((col, idx) => (
-                      <div key={idx} className="bg-zinc-900/80 p-5 rounded-[2rem] border border-white/5 flex items-center gap-6 group">
-                        <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-white/10 shadow-inner flex-shrink-0">
-                          <div className="absolute inset-0" style={{ backgroundColor: col.colorCode }} />
-                          <input type="color" value={col.colorCode} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onChange={(e) => {
-                            const newCols = [...formData.colors];
-                            newCols[idx].colorCode = e.target.value;
-                            setFormData({ ...formData, colors: newCols });
-                          }} />
-                        </div>
-                        <div className="flex-1 space-y-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-1">
-                              <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">{col.colorCode}</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[9px] font-black text-zinc-600 uppercase">Stock:</span>
-                                <input
-                                  type="number"
-                                  min="0"
-                                  value={col.count}
-                                  placeholder="0"
-                                  className="w-16 bg-black border border-white/10 rounded-lg px-2 py-1 text-xs outline-none focus:border-red-600 transition-all font-bold text-red-500"
-                                  onChange={(e) => {
-                                    const newCols = [...formData.colors];
-                                    newCols[idx].count = Number(e.target.value);
-                                    const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
-                                    setFormData({ ...formData, colors: newCols, countInStock: total });
-                                  }}
-                                />
-                              </div>
-                            </div>
-                            <div className="flex gap-2">
-                              {col.images.map((img, i) => (
-                                <div key={i} className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 relative group/img">
-                                  <img src={img} className="w-full h-full object-cover" alt="variant" />
-                                  <button type="button" onClick={() => {
-                                    const newCols = [...formData.colors];
-                                    newCols[idx].images = newCols[idx].images.filter((_, imgIdx) => imgIdx !== i);
-                                    setFormData({ ...formData, colors: newCols });
-                                  }} className="absolute inset-0 bg-red-600/90 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity"><X size={10} /></button>
-                                </div>
-                              ))}
-                              <label className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
-                                <Plus size={12} />
-                                <input type="file" hidden onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  if (file) {
-                                    const url = await uploadToR2(file);
-                                    if (url) {
-                                      const newCols = [...formData.colors];
-                                      newCols[idx].images.push(url);
-                                      setFormData({ ...formData, colors: newCols });
-                                    }
-                                  }
-                                }} />
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                        <button type="button" onClick={() => {
-                          const newCols = formData.colors.filter((_, i) => i !== idx);
-                          const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
-                          setFormData({ ...formData, colors: newCols, countInStock: total });
-                        }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
-                      </div>
-                    ))}
+  <div key={idx} className="bg-zinc-900/80 p-5 rounded-[2rem] border border-white/5 flex items-start gap-4 group">
+    {/* أيقونة اختيار اللون */}
+    <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-white/10 shadow-inner flex-shrink-0 mt-1">
+      <div className="absolute inset-0" style={{ backgroundColor: col.colorCode }} />
+      <input type="color" value={col.colorCode} className="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onChange={(e) => {
+        const newCols = [...formData.colors];
+        newCols[idx].colorCode = e.target.value;
+        setFormData({ ...formData, colors: newCols });
+      }} />
+    </div>
+
+    <div className="flex-1 space-y-3">
+      {/* مدخلات الاسم والـ SKU */}
+      <div className="grid grid-cols-2 gap-2">
+        <input 
+          placeholder="Color Name"
+          className="bg-black border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-600 text-white"
+          value={col.colorName || ""}
+          onChange={(e) => {
+            const newCols = [...formData.colors];
+            newCols[idx].colorName = e.target.value;
+            setFormData({ ...formData, colors: newCols });
+          }}
+        />
+        <input 
+          placeholder="SKU"
+          className="bg-black border border-white/10 rounded-xl px-3 py-2 text-xs outline-none focus:border-red-600 text-white font-mono"
+          value={col.sku || ""}
+          onChange={(e) => {
+            const newCols = [...formData.colors];
+            newCols[idx].sku = e.target.value;
+            setFormData({ ...formData, colors: newCols });
+          }}
+        />
+      </div>
+
+      {/* التحكم في المخزون والصور */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] font-black text-zinc-600 uppercase">Stock:</span>
+          <input
+            type="number"
+            min="0"
+            value={col.count}
+            className="w-16 bg-black border border-white/10 rounded-lg px-2 py-1 text-xs outline-none focus:border-red-600 text-red-500 font-bold"
+            onChange={(e) => {
+              const newCols = [...formData.colors];
+              newCols[idx].count = Number(e.target.value);
+              const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
+              setFormData({ ...formData, colors: newCols, countInStock: total });
+            }}
+          />
+        </div>
+
+        <div className="flex gap-2">
+          {col.images.map((img, i) => (
+            <div key={i} className="w-8 h-8 rounded-lg overflow-hidden border border-white/10 relative group/img">
+              <img src={img} className="w-full h-full object-cover" alt="variant" />
+              <button type="button" onClick={() => {
+                const newCols = [...formData.colors];
+                newCols[idx].images = newCols[idx].images.filter((_, imgIdx) => imgIdx !== i);
+                setFormData({ ...formData, colors: newCols });
+              }} className="absolute inset-0 bg-red-600/90 opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-opacity"><X size={10} /></button>
+            </div>
+          ))}
+          <label className="w-8 h-8 rounded-lg border border-dashed border-white/20 flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
+            <Plus size={12} />
+            <input type="file" hidden onChange={async (e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                const url = await uploadToR2(file);
+                if (url) {
+                  const newCols = [...formData.colors];
+                  newCols[idx].images.push(url);
+                  setFormData({ ...formData, colors: newCols });
+                }
+              }
+            }} />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    {/* زر الحذف */}
+    <button type="button" onClick={() => {
+      const newCols = formData.colors.filter((_, i) => i !== idx);
+      const total = newCols.reduce((acc, curr) => acc + (curr.count || 0), 0);
+      setFormData({ ...formData, colors: newCols, countInStock: total });
+    }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors"><Trash2 size={18} /></button>
+  </div>
+))}
                   </div>
                 </div>
 

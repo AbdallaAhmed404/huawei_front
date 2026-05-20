@@ -22,7 +22,7 @@ const translations = {
         specifications: "Specifications",
         omr: "OMR",
         Model: "Model",
-        Color: "Color",
+        Color: "Color:",
         Save: "Save",
         stock: " This color is currently out of stock",
         Qty: "Qty",
@@ -43,7 +43,7 @@ const translations = {
         specifications: "المواصفات",
         omr: "ر.ع.",
         Model: "موديل",
-        Color: "اللون",
+        Color: "اللون:",
         Save: "وفر",
         stock: "هذا اللون غير متوفر",
         Qty: "الكمية",
@@ -62,6 +62,7 @@ interface Gift {
 }
 
 interface ColorVariant {
+    colorName: string;
     colorCode: string;
     images: string[];
     count: number;
@@ -378,7 +379,7 @@ export default function ProductPurchasePage() {
                     <div className="w-full lg:w-[40%] space-y-8 text-left ">
                         <div>
                             <h1 className="text-[32px] md:text-[40px] font-bold text-black mt-2 leading-tight">
-                                {product.name}
+                                {product.name} {selectedColor && (<span>{selectedColor.colorName}</span>)}
                             </h1>
                             <p className="text-gray-500 text-sm mt-2">{product.description}</p>
                         </div>
@@ -429,7 +430,12 @@ export default function ProductPurchasePage() {
 
                         {product.colors?.length > 0 && (
                             <div className="space-y-4 border-t border-gray-90 pt-5">
-                                <h4 className="text-[16px] font-bold text-black">{t.Color}</h4>
+                                <h4 className="text-[16px] font-bold text-black">{t.Color} {selectedColor && (
+                                    <span className="text-[14px] text-gray-500 font-medium">
+                                        {selectedColor.colorName}
+                                    </span>
+                                )}</h4>
+
                                 <div className="flex gap-4">
                                     {product.colors.map((color: ColorVariant, idx: number) => (
                                         <button
@@ -442,6 +448,7 @@ export default function ProductPurchasePage() {
                                                 style={{ backgroundColor: color.colorCode }}
                                             />
                                         </button>
+
                                     ))}
 
                                 </div>

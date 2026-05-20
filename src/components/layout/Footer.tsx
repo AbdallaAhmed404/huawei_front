@@ -29,10 +29,10 @@ const footerTranslations = {
         { name: "FAQ", href: "/faq" },
       ],
       social: [
-        { name: "Facebook", href: "#" },
-        { name: "Twitter", href: "#" },
-        { name: "Youtube", href: "#" },
-        { name: "Instagram", href: "#" },
+        { name: "Facebook", href: "https://www.facebook.com/HuaweimobileEG/?brand_redir=112010774040957" },
+        { name: "X", href: "https://x.com/HuaweiArabia" },
+        { name: "Youtube", href: "https://www.youtube.com/channel/UClgn8sFLtpmr2FZZy31BImQ" },
+        { name: "Instagram", href: "https://www.instagram.com/huaweimobileom/" },
       ],
       cards: [
         { name: "Visa Card", href: "#" },
@@ -140,7 +140,7 @@ export default function Footer() {
             <ul className={`flex flex-col gap-3 text-[13px] text-gray-600 ${lang === 'ar' ? 'items-start' : 'items-start'}`}>
               {t.navigation.social.map((link) => (
                 <li key={link.name}>
-                  <Link href={link.href} className="hover:text-black hover:underline transition-all">
+                  <Link href={link.href} target="_blank"  className="hover:text-black hover:underline transition-all">
                     {link.name}
                   </Link>
                 </li>
