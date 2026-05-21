@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 import Script from "next/script";
 import { LanguageProvider } from "./context/LanguageContext";
 import ClientLayoutContent from "./ClientLayoutContent"; // استدعاء الملف الجديد
@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
+    <GoogleTagManager gtmId="GTM-N8ZQ8TDR" />
     <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

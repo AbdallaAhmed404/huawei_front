@@ -5,6 +5,8 @@ import { CheckCircle2, ShoppingBag, ArrowRight, Loader2 } from 'lucide-react';
 import Link from "next/link";
 import { useLang } from '../context/LanguageContext';
 import { useCart } from '../context/CartContext'; // تأكد من المسار الصحيح للملف
+import { sendGTMEvent } from '@next/third-parties/google';
+
 const translations = {
     en: {
         confirming: "Confirming payment status...",
@@ -55,6 +57,15 @@ function OrderSuccessContent() {
         const isSuccess = searchParams.get('success') === 'true';
         
         if (isSuccess) {
+            sendGTMEvent({
+            event: 'purchase',
+            ecommerce: {
+                transaction_id: transactionId || 'N/A', // رقم العملية
+                value: 0, // يفضل تمرير إجمالي المبلغ في الـ URL أو حفظه في LocalStorage مؤقتاً
+                currency: 'OMR',
+                items: [] // لو تقدر تمرر المنتجات اللي كانت في السلة قبل مسحها
+            }
+        });
             clearCart();
         }
         const timer = setTimeout(() => setIsProcessing(false), 1500);

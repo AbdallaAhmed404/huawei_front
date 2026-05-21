@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from 'next/link'; // استيراد Link للتنقل بين الـ variants
 import { useAuth } from '../../../(main)/context/AuthContext';
-
+import { sendGTMEvent } from '@next/third-parties/google';
 
 const translations = {
     en: {
@@ -176,6 +176,19 @@ export default function ProductPurchasePage() {
                 const res = await axios.get(`https://api.huaweioman.com/user/product/${id}`);
                 const data: Product = res.data;
                 setProduct(data);
+                sendGTMEvent({
+                event: 'view_item',
+                ecommerce: {
+                    currency: 'OMR',
+                    value: data.price,
+                    items: [{
+                        item_id: data._id,
+                        item_name: data.name,
+                        price: data.price,
+                        item_category: data.category
+                    }]
+                }
+            });
                 if (data.colors?.length > 0) {
                     setSelectedColor(data.colors[0]);
                 }
