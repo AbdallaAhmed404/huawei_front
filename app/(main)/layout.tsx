@@ -46,6 +46,24 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           }).catch(err => console.log('Analytics sync failed'));
         `}
       </Script>
+      {/* سكربت التقاط الـ UTM */}
+<Script id="utm-tracker" strategy="afterInteractive">
+  {`
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const utms = {
+        utm_source: urlParams.get('utm_source'),
+        utm_medium: urlParams.get('utm_medium'),
+        utm_campaign: urlParams.get('utm_campaign')
+      };
+
+      // نتحقق إذا كان هناك مصدر زيارة فعلي قبل التخزين
+      if (utms.utm_source) {
+        sessionStorage.setItem('user_utm', JSON.stringify(utms));
+      }
+    })();
+  `}
+</Script>
 
       <LanguageProvider>
         {/* نمرر الـ children للمكون العميل لإدارة التفاعل والاتجاه */}

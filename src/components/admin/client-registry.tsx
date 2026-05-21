@@ -25,6 +25,11 @@ interface Order {
     city: string;
     district: string;
   };
+  trafficSource?: {
+    utm_source: string;
+    utm_medium: string;
+    utm_campaign: string;
+  };
 }
 
 const STATUS_OPTIONS = [
@@ -171,7 +176,9 @@ export default function OrderRegistry() {
               <th className="px-6 py-6">Customer & Shipping</th>
               <th className="px-6 py-6">Products</th>
               <th className="px-6 py-6">Total (OMR)</th>
+              <th className="px-6 py-6">Source</th>
               <th className="px-6 py-6 text-right">Actions</th>
+
             </tr>
           </thead>
           <tbody className="divide-y divide-white/[0.04]">
@@ -230,6 +237,22 @@ export default function OrderRegistry() {
                 {/* Total */}
                 <td className="px-6 py-8 font-black text-white text-[15px]">
                   OMR {order.total?.toLocaleString()}
+                </td>
+
+
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex flex-col">
+                    <span className={cn(
+                      "px-2 py-1 rounded-md text-[10px] font-bold uppercase w-fit",
+                      order.trafficSource?.utm_source?.toLowerCase() === 'facebook'
+                        ? "bg-blue-500/10 text-blue-500"
+                        : order.trafficSource?.utm_source?.toLowerCase() === 'google'
+                          ? "bg-red-500/10 text-red-500"
+                          : "bg-zinc-500/10 text-zinc-400"
+                    )}>
+                      {order.trafficSource?.utm_source || 'Direct'}
+                    </span>
+                  </div>
                 </td>
 
                 {/* Actions */}

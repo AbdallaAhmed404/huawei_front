@@ -128,23 +128,23 @@ export default function CheckoutPage() {
 
 
     // أضف هذا الـ useEffect بجانب الـ useEffect الموجود حالياً
-useEffect(() => {
-    if (cart.length > 0) {
-        sendGTMEvent({
-            event: 'begin_checkout',
-            ecommerce: {
-                currency: 'OMR',
-                value: finalTotal,
-                items: cart.map(item => ({
-                    item_id: item._id,
-                    item_name: item.name,
-                    price: item.price - item.discount,
-                    quantity: item.quantity
-                }))
-            }
-        });
-    }
-}, [cart.length]); // يعمل مرة واحدة عند تحميل الصفحة والسلة بها منتجات
+    useEffect(() => {
+        if (cart.length > 0) {
+            sendGTMEvent({
+                event: 'begin_checkout',
+                ecommerce: {
+                    currency: 'OMR',
+                    value: finalTotal,
+                    items: cart.map(item => ({
+                        item_id: item._id,
+                        item_name: item.name,
+                        price: item.price - item.discount,
+                        quantity: item.quantity
+                    }))
+                }
+            });
+        }
+    }, [cart.length]); // يعمل مرة واحدة عند تحميل الصفحة والسلة بها منتجات
 
     // الحسابات
     const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -231,25 +231,31 @@ useEffect(() => {
         }
 
         sendGTMEvent({
-        event: 'add_shipping_info', // أو 'add_payment_info' حسب رغبتك في تفصيل الـ Funnel
-        ecommerce: {
-            currency: 'OMR',
-            value: finalTotal,
-            items: cart.map(item => ({
-                item_id: item._id,
-                item_name: item.name,
-                price: item.price - item.discount,
-                quantity: item.quantity
-            }))
-        }
-    });
-    
+            event: 'add_shipping_info', // أو 'add_payment_info' حسب رغبتك في تفصيل الـ Funnel
+            ecommerce: {
+                currency: 'OMR',
+                value: finalTotal,
+                items: cart.map(item => ({
+                    item_id: item._id,
+                    item_name: item.name,
+                    price: item.price - item.discount,
+                    quantity: item.quantity
+                }))
+            }
+        });
+
         setLoading(true);
         try {
+            const utmData = JSON.parse(sessionStorage.getItem('user_utm') || '{}');
             // 1. تجهيز بيانات الطلب حسب الموديل الجديد
             const orderPayload = {
                 user: isAuthenticated ? user?._id : null,
                 userData: formData,
+                trafficSource: {
+                    utm_source: utmData.utm_source || 'Direct',
+                    utm_medium: utmData.utm_medium || 'None',
+                    utm_campaign: utmData.utm_campaign || 'None'
+                },
                 items: cart.map(item => ({
                     productId: item._id, // ربط المنتج بـ ID
                     name: item.name,
@@ -270,7 +276,7 @@ useEffect(() => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderPayload)
-                
+
             });
 
             const orderResult = await orderResponse.json();
