@@ -87,17 +87,12 @@ export default function AdminDashboard() {
   </h1>
 
   {/* تعديل الـ Grid هنا */}
-  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full md:w-auto">
+  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full md:w-auto">
     <QuickStat label="Total Products" value={products.length.toString()} icon={<Package size={16} />} />
     <QuickStat label="Total Orders" value={orders.length.toString()} icon={<ShoppingBag size={16} />} />
     
     {/* كارت الزوار الجديد */}
-    <QuickStat 
-  label="Total Visitors" // غيرنا الاسم هنا
-  value={visitors.toString()} 
-  icon={<TrendingUp size={16} />} 
-  color="text-blue-500" 
-/>
+    
     <QuickStat 
       label="Today Sales" 
       value={`OMR ${todaySales}`} 

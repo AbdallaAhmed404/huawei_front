@@ -20,8 +20,8 @@ export const metadata: Metadata = {
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-    <GoogleTagManager gtmId="GTM-N8ZQ8TDR" />
-    <script
+      <GoogleTagManager gtmId="GTM-N8ZQ8TDR" />
+      <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
@@ -38,39 +38,69 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         }}
       />
       {/* سكربت عداد الزوار */}
-      <Script id="visitor-counter" strategy="afterInteractive">
+      <Script id="analytics-utm-tracker" strategy="afterInteractive">
         {`
-          fetch('https://api.huaweioman.com/admin/hit', { 
-            method: 'POST',
-            mode: 'no-cors' 
-          }).catch(err => console.log('Analytics sync failed'));
-        `}
-      </Script>
-      {/* سكربت التقاط الـ UTM */}
-<Script id="utm-tracker" strategy="afterInteractive">
-  {`
     (function() {
+      // 1. التقاط الـ UTM من الـ URL الحالي
       const urlParams = new URLSearchParams(window.location.search);
-      const utms = {
-        utm_source: urlParams.get('utm_source'),
-        utm_medium: urlParams.get('utm_medium'),
-        utm_campaign: urlParams.get('utm_campaign')
-      };
+      const currentSource = urlParams.get('utm_source');
+      const currentMedium = urlParams.get('utm_medium');
+      const currentCampaign = urlParams.get('utm_campaign');
 
-      // نتحقق إذا كان هناك مصدر زيارة فعلي قبل التخزين
-      if (utms.utm_source) {
+      // لو اليوزر جاي بـ UTM جديد، بنخزنه في السيشين فوراً
+      if (currentSource) {
+        const utms = {
+          utm_source: currentSource,
+          utm_medium: currentMedium,
+          utm_campaign: currentCampaign
+        };
         sessionStorage.setItem('user_utm', JSON.stringify(utms));
+      }
+
+      // 2. استرجاع المصدر المخزن
+      let activeSource = 'direct';
+      const savedUtmString = sessionStorage.getItem('user_utm');
+      
+      if (savedUtmString) {
+        try {
+          const savedUtms = JSON.parse(savedUtmString);
+          if (savedUtms && savedUtms.utm_source) {
+            activeSource = savedUtms.utm_source;
+          }
+        } catch(e) {
+          console.log('Error parsing UTMs');
+        }
+      }
+
+      // 3. التعديل الذكي: منع التكرار مع الـ Refresh والتنقل
+      // بنشوف هل بعتنا الـ hit دي قبل كدة في السيشين الحالي؟
+      const hitSent = sessionStorage.getItem('hit_sent');
+
+      if (!hitSent) {
+        // لو متبعتتش قبل كدة، ابعتها للباك إيند
+        fetch('https://api.huaweioman.com/admin/hit', { 
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ utm_source: activeSource })
+        })
+        .then(() => {
+          // نرفع العلامة إنها اتبعرت بنجاح عشان المرة الجاية متبعتش تاني
+          sessionStorage.setItem('hit_sent', 'true');
+        })
+        .catch(err => console.log('Analytics sync failed'));
       }
     })();
   `}
-</Script>
+      </Script>
 
       <LanguageProvider>
         {/* نمرر الـ children للمكون العميل لإدارة التفاعل والاتجاه */}
         <ClientLayoutContent>
           {children}
         </ClientLayoutContent>
-        
+
         <Analytics />
         <GoogleAnalytics gaId="G-C169XH8R4G" />
       </LanguageProvider>

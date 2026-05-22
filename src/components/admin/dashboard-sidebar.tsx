@@ -13,7 +13,7 @@ import {
   Settings,
   ChevronLeft,
   Menu,
-  Ticket
+  Ticket, BarChart3
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAlert } from "@/src/components/global/alert-provider";
@@ -24,6 +24,7 @@ const NAV_ITEMS = [
   { label: "Orders", icon: ShoppingCart, href: "/admin/order" },
   { label: "Customization", icon: Settings2, href: "/admin/customization" },
   { label: "coupons", icon: Ticket, href: "/admin/coupons" },
+  { label: "analytics", icon: BarChart3, href: "/admin/analytics" },
   { label: "settings", icon: Settings, href: "/admin/managers" }
 ];
 
