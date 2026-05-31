@@ -16,6 +16,7 @@ interface Order {
   _id: string;
   status: string;
   total: number;
+  createdAt: string;
   items: OrderItem[];
   userData: {
     firstName: string;
@@ -118,6 +119,7 @@ export default function OrderRegistry() {
       "City": order.userData?.city,
       "District": order.userData?.district,
       "Total (OMR)": order.total,
+      "Date": new Date(order.createdAt).toLocaleString(),
       "Status": order.status
     }));
 
@@ -177,6 +179,7 @@ export default function OrderRegistry() {
               <th className="px-6 py-6">Products</th>
               <th className="px-6 py-6">Total (OMR)</th>
               <th className="px-6 py-6">Source</th>
+              <th className="px-6 py-6">Date</th>
               <th className="px-6 py-6 text-right">Actions</th>
 
             </tr>
@@ -251,6 +254,18 @@ export default function OrderRegistry() {
                           : "bg-zinc-500/10 text-zinc-400"
                     )}>
                       {order.trafficSource?.utm_source || 'Direct'}
+                    </span>
+                  </div>
+                </td>
+
+                {/* Date - التاريخ */}
+                <td className="px-6 py-8">
+                  <div className="flex flex-col">
+                    <span className="text-white text-[14px]">
+                      {new Date(order.createdAt).toLocaleDateString('en-GB')}
+                    </span>
+                    <span className="text-zinc-500 text-[11px]">
+                      {new Date(order.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </td>
